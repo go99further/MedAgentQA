@@ -1,6 +1,15 @@
 """
-badcase_analyzer.py
-===================
+badcase_analyzer.py — RAGAS 格式 Badcase 分析器（扩展点）
+=========================================================
+本模块设计用于标准 RAGAS 评估格式（含 ragas.per_sample、responses 等字段）。
+
+**当前项目状态**：处于轻量级评估阶段，实际使用的 Badcase 分析入口为
+``scripts/run_badcase_analysis.py``，它针对 ``ablation_results.json`` 格式
+进行了适配，可直接运行。
+
+本文件保留作为未来对接完整 RAGAS 评估流程的扩展点。当 Agent 服务完整启动
+并产出含 retrieved_contexts 的评估数据后，可切换到本模块进行更精细的分析。
+
 Failure-mode classification and cross-version regression detection for
 MedAgentQA evaluations.
 

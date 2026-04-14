@@ -1,56 +1,56 @@
 # MedAgentQA
 
-> A data-flywheel-driven evaluation framework for medical question-answering agents, combining Text2SQL, RAG retrieval, and knowledge graph reasoning into a unified benchmarking pipeline.
+> 基于 10.8 万条真实患者提问（cMedQA2）的医疗多 Agent 问答系统，通过消融实验和数据闭环驱动系统迭代优化。
 
 ---
 
-## Architecture
+## 架构
 
 ```mermaid
 graph TB
-    subgraph "Layer 1: User Interface"
-        UI[Web Frontend / API Gateway]
+    subgraph "L1: 意图路由"
+        Router["Router<br/>启发式关键词 + LLM 结构化输出<br/>7 种意图分类"]
     end
 
-    subgraph "Layer 2: Agent Orchestration"
-        Router[Intent Router]
-        T2S[Text2SQL Agent]
-        RAG[RAG Retrieval Agent]
-        KG[Knowledge Graph Agent]
+    subgraph "L2: 任务编排"
+        Planner["Planner<br/>Map-Reduce 任务拆解"]
     end
 
-    subgraph "Layer 3: Data & Evaluation"
-        DB[(MySQL / PostgreSQL)]
-        VEC[(Vector Store)]
-        NEO[(Neo4j KG)]
-        EVAL[Evaluation Engine]
-        FW[Data Flywheel]
+    subgraph "L3: 原子工具"
+        T2C[Text2Cypher<br/>Neo4j 图谱查询]
+        T2S[Text2SQL<br/>MySQL 统计查询]
+        VEC[向量检索<br/>Milvus + pgvector]
+        KB[知识库检索<br/>LightRAG]
     end
 
-    UI --> Router
-    Router --> T2S
-    Router --> RAG
-    Router --> KG
-    T2S --> DB
-    RAG --> VEC
-    KG --> NEO
+    subgraph "评估层"
+        EVAL[消融实验<br/>6 版本阶梯]
+        BAD[Badcase 分析器<br/>4 种失败模式]
+        CHURN[回归检测<br/>Negative Churn]
+    end
+
+    Router --> Planner
+    Router -->|简单查询| T2C
+    Router -->|简单查询| T2S
+    Planner --> T2C
+    Planner --> T2S
+    Planner --> VEC
+    Planner --> KB
+    T2C --> EVAL
     T2S --> EVAL
-    RAG --> EVAL
-    KG --> EVAL
-    EVAL --> FW
-    FW -->|optimized data| DB
-    FW -->|optimized data| VEC
-    FW -->|optimized data| NEO
+    VEC --> EVAL
+    EVAL --> BAD
+    BAD --> CHURN
 ```
 
-## Data Flywheel
+## 数据闭环
 
 ```mermaid
 graph LR
-    A["1. Collect<br/>Gather query logs<br/>& user feedback"] --> B["2. Evaluate<br/>Run test suites<br/>& compute metrics"]
-    B --> C["3. Discover<br/>Badcase analysis<br/>& failure clustering"]
-    C --> D["4. Optimize<br/>Prompt tuning,<br/>schema refinement,<br/>data augmentation"]
-    D --> E["5. Verify<br/>Regression testing<br/>& negative churn<br/>detection"]
+    A["1. 采集<br/>cMedQA2 10.8万条<br/>真实患者提问"] --> B["2. 评估<br/>6 版本消融实验<br/>自定义指标"]
+    B --> C["3. 发现<br/>Badcase 分类<br/>失败模式聚类"]
+    C --> D["4. 优化<br/>Prompt 约束<br/>路由关键词<br/>温度调优"]
+    D --> E["5. 验证<br/>回归分析<br/>零 Negative Churn"]
     E --> A
 
     style A fill:#4CAF50,color:#fff
@@ -60,126 +60,101 @@ graph LR
     style E fill:#F44336,color:#fff
 ```
 
-## Key Features
+## 消融实验结果
 
-- **Multi-Agent Architecture** -- Unified orchestration of Text2SQL, RAG, and Knowledge Graph agents with intelligent intent routing
-- **Comprehensive Evaluation** -- 50+ curated test cases spanning 7 SQL types and 3 difficulty levels, with execution accuracy (EX) and exact match (EM) metrics
-- **Data Flywheel Pipeline** -- Automated 5-step cycle (Collect, Evaluate, Discover, Optimize, Verify) that continuously improves system quality
-- **Badcase Analysis** -- Structured failure taxonomy covering SQL generation errors, retrieval misses, schema mismatches, and reasoning failures
-- **Negative Churn Detection** -- Ensures new optimizations do not regress previously correct answers
-- **Medical Knowledge Graph** -- Neo4j-backed graph with diseases, symptoms, departments, drugs, and their relationships
-- **Docker-Ready Deployment** -- Full Docker Compose stack for one-command local development and evaluation
+基于 cMedQA2 真实患者提问，采用"独立对照 + 最优路径叠加"混合设计：
 
-## Evaluation Results
+| 指标 | v0 (Baseline) | v3 (路由关键词) | v4 (严格约束) | vFinal (组合) |
+|------|:---:|:---:|:---:|:---:|
+| 医疗安全率 | 20.0% | 26.7% (+6.7) | **86.7%** (+66.7) | 60.0% (+40.0) |
+| 结构化回答率 | 0.0% | 0.0% | **100%** (+100) | 93.3% (+93.3) |
+| 科室建议率 | 26.7% | 26.7% | **93.3%** (+66.6) | 46.7% (+20.0) |
+| 无诊断断言率 | 100% | 100% | 80.0% (-20) | **100%** (恢复) |
+| 图谱路由率 | 26.7% | **40.0%** (+13.3) | 26.7% | 40.0% (+13.3) |
 
-| Metric | Baseline | + Flywheel Round 1 | + Flywheel Round 2 | + Flywheel Round 3 |
-|--------|----------|--------------------|--------------------|---------------------|
-| Text2SQL EX (Easy) | -- | -- | -- | -- |
-| Text2SQL EX (Medium) | -- | -- | -- | -- |
-| Text2SQL EX (Hard) | -- | -- | -- | -- |
-| Text2SQL EX (Overall) | -- | -- | -- | -- |
-| RAG Recall@5 | -- | -- | -- | -- |
-| RAG MRR | -- | -- | -- | -- |
-| KG F1 | -- | -- | -- | -- |
-| Negative Churn Rate | -- | -- | -- | -- |
+**关键发现**：
+- v4（严格 RAG 约束）是单项贡献最大的优化：安全率 +66.7pp
+- v3（路由关键词）贡献完全独立：仅影响路由率，证明 Router 与下游工具解耦良好
+- v4 单独使用时无诊断断言率下降到 80%，但 vFinal 组合后恢复到 100%（协同效应）
+- **Negative Churn：0 个回归，8 个修复，回归通过率 100%**
 
-## Quick Start
+详细分析见 [docs/EVALUATION_RESULTS.md](docs/EVALUATION_RESULTS.md) 和 [docs/ABLATION_STUDY_DESIGN.md](docs/ABLATION_STUDY_DESIGN.md)
 
-### Prerequisites
-
-- Docker & Docker Compose
-- Python 3.10+
-- OpenAI or compatible API key
-
-### Launch
+## 快速开始
 
 ```bash
-# Clone the repository
-git clone https://github.com/your-org/MedAgentQA.git
+# 克隆仓库
+git clone https://github.com/go99further/MedAgentQA.git
 cd MedAgentQA
 
-# Configure environment
+# 配置环境
 cp .env.example .env
-# Edit .env to set your API keys and database credentials
+# 编辑 .env 填入你的 API Key
 
-# Start all services
-docker compose up -d
+# 安装依赖
+pip install -r requirements.txt  # 或手动安装: ragas datasets langchain openai pandas tqdm
 
-# Run the evaluation pipeline
-python scripts/run_eval.py --test-set data/eval/text2sql_test_set.jsonl --output results/
+# 运行消融实验（15 条样本，约 25 分钟）
+python scripts/run_full_ablation.py --n-samples 15
 
-# View results
-python scripts/report.py --input results/
+# 计算指标（零 API 成本，纯本地计算）
+python scripts/compute_metrics.py
+
+# 运行 Badcase 分析
+python scripts/run_badcase_analysis.py
 ```
 
-### Manual Setup (without Docker)
-
-```bash
-# Create virtual environment
-python -m venv .venv
-source .venv/bin/activate  # Linux/Mac
-# .venv\Scripts\activate   # Windows
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Initialize database
-python scripts/init_db.py
-
-# Import knowledge graph
-python scripts/import_kg.py
-
-# Run evaluation
-python scripts/run_eval.py --test-set data/eval/text2sql_test_set.jsonl
-```
-
-## Project Structure
+## 项目结构
 
 ```
 MedAgentQA/
 ├── data/
-│   ├── eval/
-│   │   └── text2sql_test_set.jsonl    # Text2SQL evaluation test cases
-│   ├── cmedqa2/                        # Chinese medical QA dataset
-│   ├── medical_kg/                     # Knowledge graph source data
-│   └── neo4j/                          # Neo4j import files
+│   ├── eval/                              # 评估数据（核心资产）
+│   │   ├── ablation_results.json          # 消融实验原始问答数据
+│   │   ├── ablation_comparison.md         # 消融对比表格
+│   │   ├── badcase_report.json            # 失败模式与回归分析
+│   │   ├── metrics_report.json            # 指标计算结果
+│   │   ├── eval_set_500.jsonl             # 500 条分层抽样评估池
+│   │   └── text2sql_test_set.jsonl        # 50 条 Text2SQL 测试用例
+│   ├── cmedqa2/                           # cMedQA2 数据集（需自行下载）
+│   ├── medical_kg/
+│   │   └── neo4j_schema.cypher            # 医疗知识图谱 Schema
+│   └── init_mysql.sql                     # 医疗数据库（50疾病/200症状/100药物）
 ├── docs/
-│   └── DATA_FLYWHEEL.md               # Data flywheel methodology
-├── evaluation/
-│   ├── text2sql_evaluator.py           # SQL execution accuracy scorer
-│   ├── rag_evaluator.py                # RAG retrieval metrics
-│   ├── kg_evaluator.py                 # Knowledge graph F1 scorer
-│   └── churn_detector.py              # Negative churn detection
-├── medagent/
-│   ├── agents/
-│   │   ├── text2sql_agent.py           # Text2SQL generation agent
-│   │   ├── rag_agent.py                # RAG retrieval agent
-│   │   └── kg_agent.py                 # Knowledge graph reasoning agent
-│   ├── router.py                       # Intent routing logic
-│   └── orchestrator.py                 # Multi-agent orchestration
+│   ├── EVALUATION_RESULTS.md              # 完整评估报告
+│   ├── ABLATION_STUDY_DESIGN.md           # 消融实验设计说明
+│   └── DATA_FLYWHEEL.md                   # 数据闭环方法论
+├── evaluation/                            # 评估框架
+│   ├── ragas_eval.py                      # RAGAS 集成（扩展点）
+│   ├── badcase_analyzer.py                # Badcase 分类（RAGAS 格式，扩展点）
+│   └── custom_metrics.py                  # 自定义指标
+├── medagent/                              # Agent 核心代码
+│   ├── application/agents/
+│   │   ├── lg_builder.py                  # 主路由 + LangGraph 编排
+│   │   ├── lg_prompts.py                  # 医疗领域提示词（10 个）
+│   │   ├── lg_states.py                   # 路由状态定义
+│   │   ├── text2sql/                      # Text2SQL 工作流（7 步流水线）
+│   │   └── kg_sub_graph/                  # 知识图谱子图 + 多工具编排
+│   ├── infrastructure/knowledge/
+│   │   ├── knowledge_service.py           # 向量检索服务
+│   │   ├── reranker.py                    # 多供应商 Rerank
+│   │   └── vector_store.py                # Milvus 向量存储
+│   └── application/services/
+│       └── redis_cache.py                 # Redis 语义缓存
 ├── scripts/
-│   ├── run_eval.py                     # Evaluation pipeline entry point
-│   ├── init_db.py                      # Database initialization
-│   ├── import_kg.py                    # Knowledge graph import
-│   └── report.py                       # Results reporting
-├── web/                                # Frontend application
-├── docker-compose.yml
-├── requirements.txt
+│   ├── run_full_ablation.py               # 消融实验运行器（6 版本）
+│   ├── compute_metrics.py                 # 独立指标计算（零 API 成本）
+│   ├── run_badcase_analysis.py            # Badcase 分析入口
+│   ├── sample_eval_set.py                 # 评估集抽样
+│   └── ingest_cmedqa2.py                  # cMedQA2 数据导入
 ├── .env.example
 └── README.md
 ```
 
-## Citation
+## 技术栈
 
-```bibtex
-@misc{medagentqa2025,
-  title={MedAgentQA: A Data-Flywheel-Driven Evaluation Framework for Medical QA Agents},
-  author={MedAgentQA Contributors},
-  year={2025},
-  url={https://github.com/your-org/MedAgentQA}
-}
-```
+LangGraph / LangChain / Milvus / Neo4j / MySQL / PostgreSQL(pgvector) / Redis / RAGAS
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE).
+MIT
