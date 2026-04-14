@@ -1,0 +1,157 @@
+{
+  "_meta": {
+    "source": "data/eval/ablation_results.json",
+    "script": "compute_metrics.py v1.0"
+  },
+  "versions": {
+    "v0": {
+      "n_samples": 15,
+      "medical_safety_rate": 0.2,
+      "structured_answer_rate": 0.0,
+      "dept_suggestion_rate": 0.267,
+      "no_diagnostic_claim_rate": 1.0,
+      "avg_answer_length": 745.4,
+      "avg_safety_score": 0.413,
+      "pass_rate": 0.133,
+      "authority_distribution": {
+        "high": 3,
+        "neutral": 11,
+        "low": 1
+      },
+      "route_distribution": {
+        "kb-query": 11,
+        "graphrag-query": 4
+      },
+      "failure_distribution": {
+        "missing_safety_disclaimer": 12,
+        "pass": 2,
+        "unstructured_response": 1
+      }
+    },
+    "v1": {
+      "n_samples": 15,
+      "medical_safety_rate": 0.133,
+      "structured_answer_rate": 0.0,
+      "dept_suggestion_rate": 0.133,
+      "no_diagnostic_claim_rate": 1.0,
+      "avg_answer_length": 726.9,
+      "avg_safety_score": 0.367,
+      "pass_rate": 0.067,
+      "authority_distribution": {
+        "high": 1,
+        "neutral": 12,
+        "low": 2
+      },
+      "route_distribution": {
+        "kb-query": 11,
+        "graphrag-query": 4
+      },
+      "failure_distribution": {
+        "missing_safety_disclaimer": 13,
+        "unstructured_response": 1,
+        "pass": 1
+      }
+    },
+    "v2": {
+      "n_samples": 15,
+      "medical_safety_rate": 0.6,
+      "structured_answer_rate": 0.067,
+      "dept_suggestion_rate": 0.6,
+      "no_diagnostic_claim_rate": 1.0,
+      "avg_answer_length": 1177.6,
+      "avg_safety_score": 0.613,
+      "pass_rate": 0.467,
+      "authority_distribution": {
+        "high": 2,
+        "neutral": 11,
+        "low": 2
+      },
+      "route_distribution": {
+        "kb-query": 11,
+        "graphrag-query": 4
+      },
+      "failure_distribution": {
+        "missing_safety_disclaimer": 6,
+        "pass": 7,
+        "unstructured_response": 2
+      }
+    },
+    "v3": {
+      "n_samples": 15,
+      "medical_safety_rate": 0.267,
+      "structured_answer_rate": 0.0,
+      "dept_suggestion_rate": 0.267,
+      "no_diagnostic_claim_rate": 1.0,
+      "avg_answer_length": 742.7,
+      "avg_safety_score": 0.433,
+      "pass_rate": 0.133,
+      "authority_distribution": {
+        "high": 2,
+        "neutral": 12,
+        "low": 1
+      },
+      "route_distribution": {
+        "kb-query": 9,
+        "graphrag-query": 6
+      },
+      "failure_distribution": {
+        "missing_safety_disclaimer": 11,
+        "pass": 2,
+        "unstructured_response": 2
+      }
+    },
+    "v4": {
+      "n_samples": 15,
+      "medical_safety_rate": 0.867,
+      "structured_answer_rate": 1.0,
+      "dept_suggestion_rate": 0.933,
+      "no_diagnostic_claim_rate": 0.867,
+      "avg_answer_length": 1058.8,
+      "avg_safety_score": 0.927,
+      "pass_rate": 0.867,
+      "authority_distribution": {
+        "high": 1,
+        "neutral": 11,
+        "low": 3
+      },
+      "route_distribution": {
+        "kb-query": 11,
+        "graphrag-query": 4
+      },
+      "failure_distribution": {
+        "pass": 13,
+        "missing_safety_disclaimer": 2
+      }
+    },
+    "vFinal": {
+      "n_samples": 15,
+      "medical_safety_rate": 0.6,
+      "structured_answer_rate": 0.933,
+      "dept_suggestion_rate": 0.467,
+      "no_diagnostic_claim_rate": 1.0,
+      "avg_answer_length": 1195.7,
+      "avg_safety_score": 0.76,
+      "pass_rate": 0.667,
+      "authority_distribution": {
+        "high": 3,
+        "neutral": 11,
+        "low": 1
+      },
+      "route_distribution": {
+        "kb-query": 9,
+        "graphrag-query": 6
+      },
+      "failure_distribution": {
+        "missing_safety_disclaimer": 5,
+        "pass": 10
+      }
+    }
+  },
+  "negative_churn": {
+    "total_samples": 15,
+    "pass_to_fail": 0,
+    "fail_to_pass": 8,
+    "net_improvement": 8,
+    "regression_pass_rate": 1.0
+  }
+}
