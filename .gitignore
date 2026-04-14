@@ -1,1 +1,6 @@
 data/cmedqa2_repo/
+data/cmedqa2/
+.env
+*.env
+__pycache__/
+*.pyc
