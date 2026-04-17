@@ -784,17 +784,25 @@ async def create_kb_query(
             {
                 "question": last_message,
                 "history": history_payload,
-            }
+            },
+            config=config,
         )
         answer_text = response.get("answer") or "检索完成，但暂时没有可以分享的结果。"
         sources = response.get("sources", [])
+        verifier_decision = response.get("verifier_decision", "")
+        refine_round = response.get("refine_round", 0)
 
         # 创建包含sources的AIMessage
         ai_message = AIMessage(content=answer_text)
         # 将sources附加到消息的additional_kwargs中
         ai_message.additional_kwargs["sources"] = sources
 
-        return {"messages": [ai_message], "sources": sources}
+        return {
+            "messages": [ai_message],
+            "sources": sources,
+            "verifier_decision": verifier_decision,
+            "refine_round": refine_round,
+        }
     except Exception as exc:
         logger.warning("KB multi-tool workflow unavailable (%s); falling back to direct search.", exc)
 

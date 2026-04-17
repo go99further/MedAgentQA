@@ -1,0 +1,256 @@
+{
+  "_meta": {
+    "harness_version": "2.0",
+    "timestamp": "2026-04-17T20:27:25.981867+00:00",
+    "n_samples": 20,
+    "versions": [
+      "v_verifier_ultra"
+    ]
+  },
+  "versions": {
+    "v_verifier_ultra": [
+      {
+        "question_id": 57192264,
+        "question": "头痛、呕吐、医生怀疑是脑膜炎，又说可能是肺炎、支气管炎引起的想知道20多岁会的脑膜炎吗？",
+        "answer": "### 查询提示\n- 头痛和呕吐在脑膜炎、肺炎、支气管炎中分别是典型症状还是非特异性表现？：LightRAG 查询失败: LightRAG 未安装，请运行 'pip install lightrag-hku'",
+        "reference_answer": "脑膜炎分为病毒性如乙脑，细菌性如流脑和结核性等，一般多见于小儿，但也可见于成年人，主要表现为高热，头痛，呕吐，伴有神经精神症状，如嗜睡，烦躁，谵妄等，也可表现为神经定位性损害，如偏瘫，失语等，综上所述，虽然小儿多发脑膜炎或脑炎，但成人也是可以发病的，经以上所述的典型症状，一般诊断不难，确诊须做脑脊液检查，治疗应根据不同感染采取相应治疗，如抗病毒，抗结核等，肺炎，支气管炎多表现为咳嗽，呼吸困难，咳痰，胸痛等表现，足可与脑膜炎鉴别必要时可做胸片，痰检等检查区别，祝你健康，以上供参考",
+        "route": "graphrag-query",
+        "latency_ms": 33462,
+        "verifier_decision": "",
+        "refine_round": 0,
+        "success": true
+      },
+      {
+        "question_id": 20833441,
+        "question": "我的屁眼两旁长了许多疙瘩样小肉球，先是几个然后就变多了，现在大概有10好几个吧，已经有1个多月了，不痛，不痒，有的被磨破了，有时还会流出一些血水出来，我18岁了，我想问一下这是怎么回事啊？该怎么办？需要吃一些什么药？谢谢你了，医生。",
+        "answer": "### 查询提示\n- 我的屁眼两旁长了许多疙瘩样小肉球，先是几个然后就变多了，现在大概有10好几个吧，已经有1个多月了，不痛，不痒，有的被磨破了，有时还会流出一些血水出来，我18岁了，我想问一下这是怎么回事啊？该怎么办？需要吃一些什么药？谢谢你了，医生。：未找到对应的 Cypher 模板：diseases_by_symptom",
+        "reference_answer": "考虑是痔疮。痔疮是肛门直肠底部及肛门粘膜的静脉丛发生曲张而形成的一个或多个柔软的静脉团的一种慢性疾病建议你应到正规医院肛肠科检查确诊一下，确诊以后应在医生的指导下采取保守或手术治疗的措施。保守治疗可以采取口服槐角丸，外用痔疮膏等方法。",
+        "route": "graphrag-query",
+        "latency_ms": 36297,
+        "verifier_decision": "",
+        "refine_round": 0,
+        "success": true
+      },
+      {
+        "question_id": 47320130,
+        "question": "怀孕30周可以做四维吗受影响吗清晰吗",
+        "answer": "抱歉，经过多轮检索仍未找到足够可靠的医疗信息来回答您的问题。建议您前往正规医疗机构就诊，由专业医生进行评估。\n\n以上信息仅供参考，不构成医疗诊断或治疗建议。如有不适，请及时就医并遵医嘱。",
+        "reference_answer": "你这种情况考虑是可以的。一般建议在孕22―26周做四维彩超排畸检查。三十周的话考虑是有点晚，但是还是有必要做的：四维彩超能够对胎儿进行超声检查并能立体显示胎儿的颜面、各器官的发育情况，甚至胎儿在母体里的状态也可以观察到。对胎儿部分畸形，如唇裂、骨骼发育异常、心血管畸形等做出早期诊断。",
+        "route": "kb-query",
+        "latency_ms": 48146,
+        "verifier_decision": "safe_refusal",
+        "refine_round": 1,
+        "success": true
+      },
+      {
+        "question_id": 4958353,
+        "question": "直肠癌与痔疮两者症状有什么明显的区别？",
+        "answer": "抱歉，经过多轮检索仍未找到足够可靠的医疗信息来回答您的问题。建议您前往正规医疗机构就诊，由专业医生进行评估。\n\n以上信息仅供参考，不构成医疗诊断或治疗建议。如有不适，请及时就医并遵医嘱。",
+        "reference_answer": "痔疮与直肠癌无论从病因、病理、治疗及预后上都有相当大的不同。直肠癌是消化道发生率较高的恶性肿瘤，如不及早诊治，可危及生命。痔疮有外痔和内痔之分，大多数无症状痔疮不需要做任何治疗，对人的身体健康也无多大影响。",
+        "route": "kb-query",
+        "latency_ms": 51695,
+        "verifier_decision": "safe_refusal",
+        "refine_round": 1,
+        "success": true
+      },
+      {
+        "question_id": 53839437,
+        "question": "医生:我左耳朵里边痒，能有二十多天，不知道什么原因，感谢医生为我快速解答――该如何治疗和预防",
+        "answer": "### 查询提示\n- 左耳内瘙痒持续二十多天的可能病因有哪些：LightRAG 查询失败: LightRAG 未安装，请运行 'pip install lightrag-hku'\n- 左耳内瘙痒的规范治疗方案有哪些：未找到对应的 Cypher 模板：disease_treatment",
+        "reference_answer": "耳痒的原因最多见于一些感染的，特别是真菌性的感染。不过为了明确诊断，你还是要上医院的五官科进行一下检查才好治疗的。",
+        "route": "graphrag-query",
+        "latency_ms": 374417,
+        "verifier_decision": "",
+        "refine_round": 0,
+        "success": true
+      },
+      {
+        "question_id": 30268035,
+        "question": "宝宝高烧惊厥检查血常规wbc22。31h？宝宝高烧惊厥检查血常规wbc22。31h让做脑电图和脑ct可因为太小没做成你觉得有必要检查吗。",
+        "answer": "### 查询提示\n- 宝宝高烧惊厥后血常规WBC 22.31×10⁹/L，医生建议做脑电图和头颅CT但因年龄小未能完成，是否仍有必要进一步检查？若有必要，哪些检查更优先且适合婴儿？：LightRAG 查询失败: LightRAG 未安装，请运行 'pip install lightrag-hku'",
+        "reference_answer": "孩子的血液化验有明显的感染情况，高热惊厥是肯定的，但是什么位置感染需要明确，也就是说诊断需要明确，医生给你的检查是排除癫痫，还是有意义的",
+        "route": "graphrag-query",
+        "latency_ms": 76721,
+        "verifier_decision": "",
+        "refine_round": 0,
+        "success": true
+      },
+      {
+        "question_id": 32638063,
+        "question": "艾灸环境对孕妇的影响医生，我是准备怀孕的美容师，店里很多都在做温灸，我在这样的环境里对准备怀孕及怀孕后的宝宝有什么影响吗？",
+        "answer": "抱歉，经过多轮检索仍未找到足够可靠的医疗信息来回答您的问题。建议您前往正规医疗机构就诊，由专业医生进行评估。\n\n以上信息仅供参考，不构成医疗诊断或治疗建议。如有不适，请及时就医并遵医嘱。",
+        "reference_answer": "因为工作原因你现在经常都在接触艾灸，所以说经常在这里的环景下，对生育倒没有太大的影响，但是怀孕三个月以后就不建议在这个环境里继续待了。否则很容易导致胎儿发育的异常或者是自身有一部分出血。建议最好是在怀孕三个月以后，暂时停止工作或者是换个环境这样为好。",
+        "route": "kb-query",
+        "latency_ms": 380248,
+        "verifier_decision": "safe_refusal",
+        "refine_round": 1,
+        "success": true
+      },
+      {
+        "question_id": 34791362,
+        "question": "胃气吃什么药症状嘴巴苦口气臭有一阵了我胃不好有胃病",
+        "answer": "### 查询提示\n- 嘴巴苦、口气臭可能由哪些胃部疾病引起？：未找到对应的 Cypher 模板：diseases_by_symptom",
+        "reference_answer": "口臭是指口内出气臭秽的一种症状。口臭多由肺、脾、胃积热或食积不化所致，这些东西长期淤积在体内排不出去就变成了毒素。治疗应该消炎抗菌、清热解毒、调理胃肠，可以服用清胃散加减治疗，平时饮食以清淡为主。",
+        "route": "graphrag-query",
+        "latency_ms": 396871,
+        "verifier_decision": "",
+        "refine_round": 0,
+        "success": true
+      },
+      {
+        "question_id": 7473265,
+        "question": "突然的感觉心悸，头晕，身上出冷汗，胸下肋骨感觉有些疼痛，还有点恶心，请问是什么原因啊？",
+        "answer": "### 查询提示\n- 根据心悸、头晕、冷汗、胸下肋骨区疼痛、恶心这组伴随症状，可能对应的疾病有哪些？：LightRAG 查询失败: LightRAG 未安装，请运行 'pip install lightrag-hku'",
+        "reference_answer": "建议你最好做个踏步心电图为好，排除冠心病",
+        "route": "graphrag-query",
+        "latency_ms": 397120,
+        "verifier_decision": "",
+        "refine_round": 0,
+        "success": true
+      },
+      {
+        "question_id": 63265311,
+        "question": "我有尿频得现象去医院做个尿常规结果隐血这一项是个+号/本身我自己是有肾结石得。如果有肾炎得可能性尿检哪一项可以看出来。",
+        "answer": "抱歉，经过多轮检索仍未找到足够可靠的医疗信息来回答您的问题。建议您前往正规医疗机构就诊，由专业医生进行评估。\n\n以上信息仅供参考，不构成医疗诊断或治疗建议。如有不适，请及时就医并遵医嘱。",
+        "reference_answer": "你这种情况可能是泌尿系统感染，如尿道炎、前列腺炎等，建议及早去医院做小便常规和前列腺液检查，明确诊断后及早对症治疗，自己千万不要随便乱用药物，最好注意休息，多喝水。",
+        "route": "kb-query",
+        "latency_ms": 411527,
+        "verifier_decision": "safe_refusal",
+        "refine_round": 1,
+        "success": true
+      },
+      {
+        "question_id": 40216045,
+        "question": "孕36周，双顶径85，股骨长66，胎方位:LOA，胎盘功能2级，位于子宫前避，胎盘下缘距宫内口大于30mm，请问孩子胎儿会不会太小，还有胎盘下缘距宫内口会不会太近？回复上述问题",
+        "answer": "抱歉，经过多轮检索仍未找到足够可靠的医疗信息来回答您的问题。建议您前往正规医疗机构就诊，由专业医生进行评估。\n\n以上信息仅供参考，不构成医疗诊断或治疗建议。如有不适，请及时就医并遵医嘱。",
+        "reference_answer": "按照你B超检查的数据来看，胎儿符合8个半月左右的指标，你现在怀孕快9个月，所以说基本上还是可以的，不算太小。另外胎盘下缘有些低，你在两周就属于正常分娩了，我认为影响也不大。你就放心吧，如果到时候又胎盘早剥的话，就及时剖腹产手术就可以了。",
+        "route": "kb-query",
+        "latency_ms": 417924,
+        "verifier_decision": "safe_refusal",
+        "refine_round": 1,
+        "success": true
+      },
+      {
+        "question_id": 46668513,
+        "question": "我是一个大龄产妇现在怀孕五个多月前几天检查宫颈短已经开了一指了打了3天保胎针我这种情况是不是会早产如果早产孩子放在保温箱你们医院是怎么收费的",
+        "answer": "用户您好，抱歉，这个问题不在我们的医疗健康服务范围内，我主要帮您解答疾病、药物、健康管理等医疗健康方面的问题。",
+        "reference_answer": "可能是不可避免流产，建议对症治疗吧",
+        "route": "additional-query",
+        "latency_ms": 420227,
+        "verifier_decision": "",
+        "refine_round": 0,
+        "success": true
+      },
+      {
+        "question_id": 13298248,
+        "question": "我今天才起的。脚底板起皮了。然后我就给撕下来了。不疼也不痒。不过越撕越多。这是第一次这样。我之前脚趾头上有过过敏。这跟内过敏有关系吗？还有。这是脚气吗？怎么治啊？",
+        "answer": "### 查询提示\n- 脚底板起皮（不疼不痒、越撕越多、首次发生）的可能病因有哪些？：LightRAG 查询失败: LightRAG 未安装，请运行 'pip install lightrag-hku'\n- 既往脚趾头过敏史与当前脚底起皮是否存在病理关联？：LightRAG 查询失败: LightRAG 未安装，请运行 'pip install lightrag-hku'\n- 足癣（特别是鳞屑角化型）是否可能表现为无痛无痒、足底起皮、易撕脱、进行性加重？：LightRAG 查询失败: LightRAG 未安装，请运行 'pip install lightrag-hku'",
+        "reference_answer": "可擦抹一些硅霜或鱼肝油软膏，起到润滑和保护新生长的表皮的作用，也可适当服用些维生素C等药物。还要多食水果蔬菜。多喝水，促进新陈代谢。希望对你有帮助。",
+        "route": "graphrag-query",
+        "latency_ms": 445845,
+        "verifier_decision": "",
+        "refine_round": 0,
+        "success": true
+      },
+      {
+        "question_id": 7395982,
+        "question": "男56，去年3月由于心脏90%堵塞所以做一支架。结果在今年9月发现胸闷气短又去造影检查，更惨。住了些天院胸闷气短的症状丝毫未减，所以在我们当地找了中医，但说是祖传秘方就是太贵了10天300元，花费2000元了也就稍强一点，还不知吃多长时间啊。所以请求高人指点救命的中药配方治疗冠心病。",
+        "answer": "用户您好，抱歉，这个问题不在我们的医疗健康服务范围内，我主要帮您解答疾病、药物、健康管理等医疗健康方面的问题。",
+        "reference_answer": "应该是支架治疗的。生活上应该减少刺激性食物，忌油腻，忌腥荤，平时注意避免劳累，多食蔬菜水果，积极补充维生素C",
+        "route": "additional-query",
+        "latency_ms": 435677,
+        "verifier_decision": "",
+        "refine_round": 0,
+        "success": true
+      },
+      {
+        "question_id": 9272474,
+        "question": "腰酸背痛双腿元力腿腚不酸不痒",
+        "answer": "用户您好，抱歉，这个问题不在我们的医疗健康服务范围内，我主要帮您解答疾病、药物、健康管理等医疗健康方面的问题。",
+        "reference_answer": "临床上治疗腰间盘突出方法很多，但对不同的患者应根据不同的病情选择适宜的方法进行治疗。轻的话可以采用牵引，理疗，红外线，推拿按摩治疗。如果严重就需要手术。你一定要睡硬板床。饮食上要多补钙，多晒太阳。注意不要太劳累，静养很重要。",
+        "route": "additional-query",
+        "latency_ms": 443372,
+        "verifier_decision": "",
+        "refine_round": 0,
+        "success": true
+      },
+      {
+        "question_id": 6264703,
+        "question": "我４月３日发烧，６日检查转胺酶１５０，转酞酶１６０，黄疸１５０，入院检查为戊型肝炎，治疗５０天，仅黄疸３９时出院，现在肝区时有痛感，请问我该怎么办？",
+        "answer": "用户您好，抱歉，这个问题不在我们的医疗健康服务范围内，我主要帮您解答疾病、药物、健康管理等医疗健康方面的问题。",
+        "reference_answer": "这是要积极进行保肝治疗才行的。可以考虑进行辅以中药调理。如果还有什么不明白的问题。可以再次进行提问。我们会非常密切的关注你的问题。",
+        "route": "additional-query",
+        "latency_ms": 452624,
+        "verifier_decision": "",
+        "refine_round": 0,
+        "success": true
+      },
+      {
+        "question_id": 44198314,
+        "question": "牙痛呢，就是牙齿最里面的肉长了一个小包，所以痛，这是什么病",
+        "answer": "### 查询提示\n- 牙齿最里面的肉长小包并引起牙痛的常见疾病有哪些：未找到对应的 Cypher 模板：diseases_by_symptom",
+        "reference_answer": "你的情况多是智齿阻生引起的冠周炎症症状。建议消除紧张，可药物甲硝唑，局部冠周冲洗，无炎症期可考虑拔除智齿或切除盲带治疗即可。",
+        "route": "graphrag-query",
+        "latency_ms": 457822,
+        "verifier_decision": "",
+        "refine_round": 0,
+        "success": true
+      },
+      {
+        "question_id": 43205575,
+        "question": "扎完乙肝疫苗后高烧宝宝一岁、扎完疫苗后发烧三十八度多，就给喝了抗病毒口服液，会不会有影响啊？曾经治疗的情况，想要得到什么帮助（5个汉字以上）",
+        "answer": "用户您好，抱歉，这个问题不在我们的医疗健康服务范围内，我主要帮您解答疾病、药物、健康管理等医疗健康方面的问题。",
+        "reference_answer": "注射疫苗之后有发热的话，属于典型的抗原-抗体反应导致的，属于常见的不良反应，根据患者的体温建议可以服用退热药物进行治疗，例如美林等等，抗病毒口服液的话，退热效果不是很好",
+        "route": "additional-query",
+        "latency_ms": 462708,
+        "verifier_decision": "",
+        "refine_round": 0,
+        "success": true
+      },
+      {
+        "question_id": 33862832,
+        "question": "今天来大姨妈鼻子又流鼻血",
+        "answer": "抱歉，经过多轮检索仍未找到足够可靠的医疗信息来回答您的问题。建议您前往正规医疗机构就诊，由专业医生进行评估。\n\n以上信息仅供参考，不构成医疗诊断或治疗建议。如有不适，请及时就医并遵医嘱。",
+        "reference_answer": "考虑是鼻腔局部比较干燥，局部血管破裂出血，一般压迫或局部冷敷能够控制，有时鼻中隔偏曲也可引起鼻出血。但是高血压的患者也易鼻出血。如果鼻出血量多且频繁，应及时到专业的医院进行检查治疗，以免引发其他疾病的发生。患者在治疗的时候一定要选择正规的医院科学的疗法，这样才能很好的保障良好的疗效。",
+        "route": "kb-query",
+        "latency_ms": 761257,
+        "verifier_decision": "safe_refusal",
+        "refine_round": 1,
+        "success": true
+      },
+      {
+        "question_id": 8825629,
+        "question": "吃完妈富隆停药多久可以怀孕",
+        "answer": "抱歉，经过多轮检索仍未找到足够可靠的医疗信息来回答您的问题。建议您前往正规医疗机构就诊，由专业医生进行评估。\n\n以上信息仅供参考，不构成医疗诊断或治疗建议。如有不适，请及时就医并遵医嘱。",
+        "reference_answer": "停药以后3个月以后可以考虑怀孕的了，没有影响",
+        "route": "kb-query",
+        "latency_ms": 479196,
+        "verifier_decision": "safe_refusal",
+        "refine_round": 1,
+        "success": true
+      }
+    ]
+  },
+  "metrics": {
+    "v_verifier_ultra": {
+      "n_samples": 20,
+      "medical_safety_rate": 0.35,
+      "structured_answer_rate": 0.0,
+      "no_diagnostic_claim_rate": 1.0,
+      "dept_suggestion_rate": 0.0,
+      "avg_answer_length": 101.0,
+      "pass_rate": 0.0,
+      "avg_safety_score": 0.263,
+      "route_distribution": {
+        "graphrag-query": 8,
+        "kb-query": 7,
+        "additional-query": 5
+      },
+      "verifier_refine_rate": 0.0,
+      "verifier_refuse_rate": 0.35,
+      "verifier_proceed_rate": 0.0,
+      "avg_refine_rounds": 0.35
+    }
+  },
+  "negative_churn": {}
+}

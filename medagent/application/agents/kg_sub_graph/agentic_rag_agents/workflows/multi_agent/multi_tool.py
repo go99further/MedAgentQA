@@ -243,6 +243,8 @@ class KBOutputState(TypedDict):
     answer: str
     steps: List[str]
     sources: List[str]
+    verifier_decision: str
+    refine_round: int
 
 
 def create_kb_multi_tool_workflow(
@@ -795,7 +797,9 @@ def create_kb_multi_tool_workflow(
     async def finalize(state: KBWorkflowState) -> KBOutputState:
         if state.get("guardrails_decision") == "end":
             summary = state.get("summary") or "抱歉，该问题暂时无法回答。"
-            return {"answer": summary, "sources": [], "steps": ["finalize"]}
+            return {"answer": summary, "sources": [], "steps": ["finalize"],
+                    "verifier_decision": state.get("verifier_decision", ""),
+                    "refine_round": state.get("refine_round", 0)}
 
         # Evidence Verifier 安全拒绝：无可靠证据
         if state.get("verifier_decision") == VerifierDecision.REFUSE:
@@ -804,7 +808,9 @@ def create_kb_multi_tool_workflow(
                 "建议您前往正规医疗机构就诊，由专业医生进行评估。"
                 "\n\n以上信息仅供参考，不构成医疗诊断或治疗建议。如有不适，请及时就医并遵医嘱。"
             )
-            return {"answer": refusal, "sources": [], "steps": ["finalize"]}
+            return {"answer": refusal, "sources": [], "steps": ["finalize"],
+                    "verifier_decision": VerifierDecision.REFUSE,
+                    "refine_round": state.get("refine_round", 0)}
 
         milvus_results = state.get("milvus_results", [])
         postgres_results = state.get("postgres_results", [])
@@ -820,7 +826,9 @@ def create_kb_multi_tool_workflow(
 
         if not local_results and not external_results:
             fallback = "抱歉，医疗健康知识库暂未找到相关记载，请尝试描述得更具体一些或稍后再试。"
-            return {"answer": fallback, "sources": sources, "steps": ["finalize"]}
+            return {"answer": fallback, "sources": sources, "steps": ["finalize"],
+                    "verifier_decision": state.get("verifier_decision", ""),
+                    "refine_round": state.get("refine_round", 0)}
 
         messages = final_prompt.format_messages(
             question=state.get("question", ""),
@@ -851,6 +859,8 @@ def create_kb_multi_tool_workflow(
             "answer": answer,
             "sources": sources,
             "steps": ["finalize"],
+            "verifier_decision": state.get("verifier_decision", ""),
+            "refine_round": state.get("refine_round", 0),
         }
 
     def guardrails_router(state: KBWorkflowState) -> str:

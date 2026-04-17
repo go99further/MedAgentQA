@@ -64,6 +64,21 @@ VERSIONS = {
         "desc": "Agentic RAG with Evidence Verifier enabled",
         "configurable": {},
     },
+    # Evidence Verifier threshold experiments (Phase 7)
+    "v_verifier_strict": {
+        "desc": "Agentic RAG，高阈值强制 REFINE（min_relevance_score=0.7）",
+        "configurable": {
+            "verifier_min_relevance_score": 0.7,   # cMedQA2 max_score 约 0.52-0.70，会触发 REFINE
+            "verifier_min_chunks": 3,               # 要求 3 个以上高质量 chunk
+        },
+    },
+    "v_verifier_ultra": {
+        "desc": "Agentic RAG，极高阈值强制 REFUSE（min_relevance_score=0.95）",
+        "configurable": {
+            "verifier_min_relevance_score": 0.95,   # 必然触发 REFUSE
+            "verifier_max_refine_rounds": 1,
+        },
+    },
 }
 
 
@@ -191,7 +206,7 @@ def _print_summary(metrics: dict):
     print(f"{'='*80}")
     header = (
         f"{'Version':<12} {'Safety':>8} {'Struct':>8} {'Pass':>8} "
-        f"{'Refine%':>8} {'Refuse%':>8}"
+        f"{'Refine%':>8} {'Refuse%':>8} {'AvgRnds':>8}"
     )
     print(header)
     print("-" * 80)
@@ -202,7 +217,8 @@ def _print_summary(metrics: dict):
             f"{m.get('structured_answer_rate', 0):>8.3f} "
             f"{m.get('pass_rate', 0):>8.3f} "
             f"{m.get('verifier_refine_rate', 0):>8.3f} "
-            f"{m.get('verifier_refuse_rate', 0):>8.3f}"
+            f"{m.get('verifier_refuse_rate', 0):>8.3f} "
+            f"{m.get('avg_refine_rounds', 0):>8.3f}"
         )
 
 

@@ -50,7 +50,7 @@ class TestDefaultVerifierStrategy:
         contexts = []  # would normally trigger REFINE
         decision = self.strategy.verify(
             "感冒怎么治", contexts,
-            refine_round=DefaultVerifierStrategy.MAX_REFINE_ROUNDS,
+            refine_round=DefaultVerifierStrategy().max_refine_rounds,
             refined_queries=["query1", "query2"],
         )
         assert decision == VerifierDecision.REFUSE

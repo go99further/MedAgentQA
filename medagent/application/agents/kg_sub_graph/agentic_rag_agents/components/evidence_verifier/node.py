@@ -9,11 +9,13 @@ Evidence Verifier — Agentic RAG 核心模块
 from __future__ import annotations
 
 import math
+from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Dict, List, Optional, Protocol, runtime_checkable
 
 from langchain_core.language_models import BaseChatModel
 from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.runnables import RunnableConfig
 from medagent.infrastructure.core.logger import get_logger
 
 verifier_logger = get_logger(service="evidence-verifier")
@@ -39,6 +41,7 @@ class VerifierStrategy(Protocol):
         ...
 
 
+@dataclass
 class DefaultVerifierStrategy:
     """
     基础实现：相关性评分 + 覆盖度检查 + 防循环机制。
@@ -53,10 +56,10 @@ class DefaultVerifierStrategy:
     防循环：新 refine query 与历史查询余弦相似度 > LOOP_THRESHOLD → REFUSE
     """
 
-    MIN_CHUNKS: int = 2
-    MIN_RELEVANCE_SCORE: float = 0.3
-    MAX_REFINE_ROUNDS: int = 2
-    LOOP_THRESHOLD: float = 0.92
+    min_chunks: int = 2
+    min_relevance_score: float = 0.3
+    max_refine_rounds: int = 2
+    loop_threshold: float = 0.92
 
     def verify(
         self,
@@ -65,10 +68,10 @@ class DefaultVerifierStrategy:
         refine_round: int,
         refined_queries: List[str],
     ) -> VerifierDecision:
-        if refine_round >= self.MAX_REFINE_ROUNDS:
+        if refine_round >= self.max_refine_rounds:
             verifier_logger.info(
                 "Evidence Verifier: max refine rounds ({}) reached → REFUSE",
-                self.MAX_REFINE_ROUNDS,
+                self.max_refine_rounds,
             )
             return VerifierDecision.REFUSE
 
@@ -81,11 +84,11 @@ class DefaultVerifierStrategy:
             c for c in contexts
             if c.get("content") and str(c.get("content", "")).strip()
         ]
-        if len(valid_chunks) < self.MIN_CHUNKS:
+        if len(valid_chunks) < self.min_chunks:
             verifier_logger.info(
                 "Evidence Verifier: only {} valid chunks (< {}) → REFINE",
                 len(valid_chunks),
-                self.MIN_CHUNKS,
+                self.min_chunks,
             )
             return VerifierDecision.REFINE
 
@@ -94,11 +97,11 @@ class DefaultVerifierStrategy:
             for c in valid_chunks
         ]
         max_score = max(scores) if scores else 0.0
-        if max_score < self.MIN_RELEVANCE_SCORE:
+        if max_score < self.min_relevance_score:
             verifier_logger.info(
                 "Evidence Verifier: max relevance score {:.3f} < {:.3f} → REFINE",
                 max_score,
-                self.MIN_RELEVANCE_SCORE,
+                self.min_relevance_score,
             )
             return VerifierDecision.REFINE
 
@@ -192,20 +195,45 @@ def create_evidence_verifier_node(
         用于生成 refine query 的 LLM。
     strategy : VerifierStrategy, optional
         验证策略，默认使用 DefaultVerifierStrategy。
+        若提供自定义策略则忽略 configurable 中的阈值参数。
     embedding_fn : callable, optional
         接受字符串返回 List[float] 的 embedding 函数，用于防循环相似度检测。
         若为 None，则跳过相似度检测。
 
     返回的节点函数签名
     ------------------
-    async def evidence_verifier(state: dict) -> dict
+    async def evidence_verifier(state: dict, *, config: RunnableConfig) -> dict
         读取 state 中的 local_results / milvus_results / postgres_results，
         写入 verifier_decision、refined_question、refine_round、refined_queries。
-    """
-    _strategy = strategy or DefaultVerifierStrategy()
-    _loop_threshold = DefaultVerifierStrategy.LOOP_THRESHOLD
 
-    async def evidence_verifier(state: Dict[str, Any]) -> Dict[str, Any]:
+    configurable 支持的键（通过 RunnableConfig 传入）
+    -----------------------------------------------
+    verifier_min_relevance_score : float  (default 0.3)
+    verifier_min_chunks : int             (default 2)
+    verifier_max_refine_rounds : int      (default 2)
+    """
+    _fixed_strategy = strategy  # None → build from configurable at call time
+
+    async def evidence_verifier(state: Dict[str, Any], *, config: RunnableConfig = None) -> Dict[str, Any]:
+        # 从 RunnableConfig 读取可覆盖的阈值
+        cfg: Dict[str, Any] = {}
+        if config is not None:
+            if isinstance(config, dict):
+                cfg = dict(config.get("configurable", {}) or {})
+            else:
+                cfg = dict(getattr(config, "configurable", {}) or {})
+
+        if _fixed_strategy is not None:
+            _strategy = _fixed_strategy
+            _loop_threshold = getattr(_fixed_strategy, "loop_threshold", 0.92)
+        else:
+            _strategy = DefaultVerifierStrategy(
+                min_relevance_score=cfg.get("verifier_min_relevance_score", 0.3),
+                min_chunks=int(cfg.get("verifier_min_chunks", 2)),
+                max_refine_rounds=int(cfg.get("verifier_max_refine_rounds", 2)),
+            )
+            _loop_threshold = _strategy.loop_threshold
+
         question = state.get("question", "")
         refine_round: int = state.get("refine_round", 0)
         refined_queries: List[str] = list(state.get("refined_queries") or [])

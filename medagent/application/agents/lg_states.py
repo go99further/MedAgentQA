@@ -102,3 +102,9 @@ class AgentState(InputState):
     hallucination: GradeHallucinations = field(default_factory=lambda: GradeHallucinations(binary_score="0"))
     sources: list = field(default_factory=list)
     """Sources from knowledge base queries."""
+    verifier_decision: str = field(default_factory=str)
+    """Evidence Verifier decision: proceed / refine_query / safe_refusal"""
+    refine_round: int = 0
+    """Number of retrieval refinement rounds performed."""
+    refined_queries: list = field(default_factory=list)
+    """Query strings used in refinement rounds."""
