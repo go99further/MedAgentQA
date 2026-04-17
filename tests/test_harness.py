@@ -159,7 +159,7 @@ class TestEvaluationHarness:
         harness.save(result, tmp_path)
         assert Path(tmp_path).exists()
 
-        with open(tmp_path) as f:
+        with open(tmp_path, encoding="utf-8") as f:
             loaded = json.load(f)
         assert "versions" in loaded
         assert "v0" in loaded["versions"]
