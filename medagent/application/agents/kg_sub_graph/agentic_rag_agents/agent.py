@@ -10,7 +10,7 @@ from medagent.config import settings
 from medagent.infrastructure.knowledge.embeddings import OpenAICompatibleEmbeddings
 
 from medagent.application.agents.kg_sub_graph.agentic_rag_agents.retrievers.cypher_examples import (
-    recipe_retriever,
+    medical_retriever,
 )
 
 # from ps_genai_agents.workflows.single_agent import create_text2cypher_agent

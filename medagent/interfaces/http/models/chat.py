@@ -11,7 +11,7 @@ class ChatRequest(BaseModel):
     class Config:
         json_schema_extra = {
             "example": {
-                "message": "怎么做红烧肉？",
+                "message": "高血压有哪些症状？",
                 "session_id": "session_123",
                 "user_id": "user_456",
             }
@@ -29,7 +29,7 @@ class ChatResponse(BaseModel):
     class Config:
         json_schema_extra = {
             "example": {
-                "answer": "红烧肉的做法是...",
+                "answer": "高血压的常见症状包括头痛、头晕、心悸...",
                 "session_id": "session_123",
                 "type": "knowledge",
                 "metadata": {

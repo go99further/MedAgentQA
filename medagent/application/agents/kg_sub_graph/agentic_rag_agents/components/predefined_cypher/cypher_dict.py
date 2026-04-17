@@ -1,210 +1,120 @@
 """
-预定义菜谱 Cypher 查询字典
-基于 recipe_kg 模块的 4 种问题类型和 Neo4j 菜谱图谱 schema 设计
-对应 kg_tools_list.py 中 predefined_cypher 工具描述的 8 大类查询
+预定义医疗知识图谱 Cypher 查询字典
+基于医疗 KG schema（Disease、Symptom、Drug、Department、Treatment）设计
+对应 descriptions.py 中 5 大类查询描述
 """
 from typing import Dict
 
 predefined_cypher_dict: Dict[str, str] = {
-    # ==================== 1. 菜品属性查询 (recipe_property) ====================
-    # 对应 recipe_kg 的 recipe_property 问题类型
+    # ==================== 1. 疾病属性查询 ====================
 
-    "dish_instructions": """
-MATCH (d:Dish {name: $dish_name})
-RETURN d.name AS 菜名, d.instructions AS 做法
+    "disease_symptoms": """
+MATCH (d:Disease {name: $disease_name})-[:HAS_SYMPTOM]->(s:Symptom)
+RETURN d.name AS 疾病, collect(s.name) AS 症状列表
 """,
 
-    "dish_cook_time": """
-MATCH (d:Dish {name: $dish_name})
-RETURN d.name AS 菜名, d.cook_time AS 耗时
+    "disease_causes": """
+MATCH (d:Disease {name: $disease_name})
+RETURN d.name AS 疾病, d.cause AS 病因, d.description AS 描述
 """,
 
-    "dish_flavor": """
-MATCH (d:Dish {name: $dish_name})-[:HAS_FLAVOR]->(f:Flavor)
-RETURN d.name AS 菜名, collect(f.name) AS 口味
+    "disease_treatments": """
+MATCH (d:Disease {name: $disease_name})
+OPTIONAL MATCH (d)-[:TREATED_BY]->(dr:Drug)
+OPTIONAL MATCH (d)-[:HAS_TREATMENT]->(t:Treatment)
+RETURN d.name AS 疾病,
+       collect(DISTINCT dr.name) AS 药物治疗,
+       collect(DISTINCT t.method) AS 治疗方案
 """,
 
-    "dish_cooking_method": """
-MATCH (d:Dish {name: $dish_name})-[:USES_METHOD]->(m:CookingMethod)
-RETURN d.name AS 菜名, collect(m.name) AS 工艺
+    "disease_complications": """
+MATCH (d:Disease {name: $disease_name})-[:MAY_CAUSE]->(c:Disease)
+RETURN d.name AS 疾病, collect(c.name) AS 并发症
 """,
 
-    "dish_type": """
-MATCH (d:Dish {name: $dish_name})-[:BELONGS_TO_TYPE]->(t:DishType)
-RETURN d.name AS 菜名, collect(t.name) AS 类型
+    "disease_complete_info": """
+MATCH (d:Disease {name: $disease_name})
+OPTIONAL MATCH (d)-[:HAS_SYMPTOM]->(s:Symptom)
+OPTIONAL MATCH (d)-[:TREATED_BY]->(dr:Drug)
+OPTIONAL MATCH (d)-[:BELONGS_TO]->(dep:Department)
+OPTIONAL MATCH (d)-[:MAY_CAUSE]->(c:Disease)
+RETURN d.name AS 疾病,
+       d.description AS 描述,
+       collect(DISTINCT s.name) AS 症状,
+       collect(DISTINCT dr.name) AS 药物,
+       collect(DISTINCT dep.name) AS 就诊科室,
+       collect(DISTINCT c.name) AS 并发症
 """,
 
-    "dish_complete_info": """
-MATCH (d:Dish {name: $dish_name})
-OPTIONAL MATCH (d)-[:HAS_FLAVOR]->(f:Flavor)
-OPTIONAL MATCH (d)-[:USES_METHOD]->(m:CookingMethod)
-OPTIONAL MATCH (d)-[:BELONGS_TO_TYPE]->(t:DishType)
-RETURN d.name AS 菜名,
-       d.cook_time AS 耗时,
-       d.instructions AS 做法,
-       collect(DISTINCT f.name) AS 口味,
-       collect(DISTINCT m.name) AS 工艺,
-       collect(DISTINCT t.name) AS 类型
+    # ==================== 2. 药物相关查询 ====================
+
+    "drug_indications": """
+MATCH (dr:Drug {name: $drug_name})-[:TREATS]->(d:Disease)
+RETURN dr.name AS 药物, collect(d.name) AS 适应症
 """,
 
-    # ==================== 2. 属性约束查询 (property_constraint) ====================
-    # 对应 recipe_kg 的 property_constraint 问题类型
-
-    "dishes_by_flavor": """
-MATCH (d:Dish)-[:HAS_FLAVOR]->(f:Flavor {name: $flavor_name})
-RETURN d.name AS 菜名 LIMIT 15
+    "drug_contraindications": """
+MATCH (dr:Drug {name: $drug_name})
+RETURN dr.name AS 药物, dr.contraindications AS 禁忌症
 """,
 
-    "dishes_by_method": """
-MATCH (d:Dish)-[:USES_METHOD]->(m:CookingMethod {name: $method_name})
-RETURN d.name AS 菜名 LIMIT 15
+    "drug_side_effects": """
+MATCH (dr:Drug {name: $drug_name})-[:SIDE_EFFECT]->(s:Symptom)
+RETURN dr.name AS 药物, collect(s.name) AS 不良反应
 """,
 
-    "dishes_by_type": """
-MATCH (d:Dish)-[:BELONGS_TO_TYPE]->(t:DishType {name: $type_name})
-RETURN d.name AS 菜名 LIMIT 15
+    "drug_interactions": """
+MATCH (dr1:Drug {name: $drug_name})-[:CONTRADICTS]->(dr2:Drug)
+RETURN dr1.name AS 药物, collect(dr2.name) AS 相互作用禁忌
 """,
 
-    "dishes_by_multi_constraints": """
-MATCH (d:Dish)
-WHERE
-  EXISTS((d)-[:HAS_FLAVOR]->(:Flavor {name: $flavor_name}))
-  AND EXISTS((d)-[:USES_METHOD]->(:CookingMethod {name: $method_name}))
-RETURN d.name AS 菜名 LIMIT 15
+    "drug_dosage": """
+MATCH (dr:Drug {name: $drug_name})
+RETURN dr.name AS 药物, dr.dosage AS 用法用量, dr.dosage_form AS 剂型, dr.specification AS 规格
 """,
 
-    # ==================== 3. 关系约束查询 (relationship_constraint) ====================
-    # 对应 recipe_kg 的 relationship_constraint 问题类型
+    # ==================== 3. 症状相关查询 ====================
 
-    "dishes_by_main_ingredient": """
-MATCH (d:Dish)-[r:HAS_MAIN_INGREDIENT]->(i:Ingredient {name: $ingredient_name})
-RETURN d.name AS 菜名, type(r) AS 关系 LIMIT 15
+    "symptom_related_diseases": """
+MATCH (s:Symptom {name: $symptom_name})<-[:HAS_SYMPTOM]-(d:Disease)
+RETURN s.name AS 症状, collect(d.name) AS 可能疾病 LIMIT 10
 """,
 
-    "dishes_by_aux_ingredient": """
-MATCH (d:Dish)-[r:HAS_AUX_INGREDIENT]->(i:Ingredient {name: $ingredient_name})
-RETURN d.name AS 菜名, type(r) AS 关系 LIMIT 15
+    "symptom_severity": """
+MATCH (s:Symptom {name: $symptom_name})
+RETURN s.name AS 症状, s.severity_level AS 严重程度, s.description AS 描述
 """,
 
-    "ingredients_of_dish": """
-MATCH (d:Dish {name: $dish_name})-[r]->(i:Ingredient)
-WHERE type(r) IN ['HAS_MAIN_INGREDIENT', 'HAS_AUX_INGREDIENT']
-RETURN i.name AS 食材, type(r) AS 关系类型, r.amount_text AS 用量
+    # ==================== 4. 科室相关查询 ====================
+
+    "disease_department": """
+MATCH (d:Disease {name: $disease_name})-[:BELONGS_TO]->(dep:Department)
+RETURN d.name AS 疾病, dep.name AS 就诊科室
 """,
 
-    "main_ingredients_of_dish": """
-MATCH (d:Dish {name: $dish_name})-[r:HAS_MAIN_INGREDIENT]->(i:Ingredient)
-RETURN i.name AS 主食材, r.amount_text AS 用量
+    "department_diseases": """
+MATCH (dep:Department {name: $department_name})<-[:BELONGS_TO]-(d:Disease)
+RETURN dep.name AS 科室, collect(d.name) AS 常见疾病 LIMIT 20
 """,
 
-    "aux_ingredients_of_dish": """
-MATCH (d:Dish {name: $dish_name})-[r:HAS_AUX_INGREDIENT]->(i:Ingredient)
-RETURN i.name AS 辅料, r.amount_text AS 用量
+    # ==================== 5. 统计分析查询 ====================
+
+    "disease_prevalence": """
+MATCH (d:Disease)
+WHERE d.prevalence IS NOT NULL
+RETURN d.name AS 疾病, d.prevalence AS 患病率
+ORDER BY d.prevalence DESC LIMIT 10
 """,
 
-    # ==================== 4. 关系用量查询 (relationship_query) ====================
-    # 对应 recipe_kg 的 relationship_query 问题类型
-
-    "ingredient_amount_in_dish": """
-MATCH (d:Dish {name: $dish_name})-[r]->(i:Ingredient {name: $ingredient_name})
-WHERE type(r) IN ['HAS_MAIN_INGREDIENT', 'HAS_AUX_INGREDIENT']
-RETURN r.amount_text AS 用量
+    "drug_usage_count": """
+MATCH (dr:Drug {name: $drug_name})-[:TREATS]->(d:Disease)
+WITH count(DISTINCT d) AS 适应症数量
+RETURN 适应症数量
 """,
 
-    "main_ingredient_amount": """
-MATCH (d:Dish {name: $dish_name})-[r:HAS_MAIN_INGREDIENT]->(i:Ingredient {name: $ingredient_name})
-RETURN r.amount_text AS 用量
-""",
-
-    "aux_ingredient_amount": """
-MATCH (d:Dish {name: $dish_name})-[r:HAS_AUX_INGREDIENT]->(i:Ingredient {name: $ingredient_name})
-RETURN r.amount_text AS 用量
-""",
-
-    # ==================== 5. 烹饪步骤查询 ====================
-
-    "cooking_steps": """
-MATCH (d:Dish {name: $dish_name})-[r:HAS_STEP]->(s:CookingStep)
-RETURN s.order AS 步骤序号, s.instruction AS 步骤说明
-ORDER BY s.order
-""",
-
-    "step_by_order": """
-MATCH (d:Dish {name: $dish_name})-[r:HAS_STEP]->(s:CookingStep {order: $step_order})
-RETURN s.order AS 步骤序号, s.instruction AS 步骤说明
-""",
-
-    # ==================== 6. 食材营养与功效查询 ====================
-
-    "ingredient_nutrition": """
-MATCH (i:Ingredient {name: $ingredient_name})-[:HAS_NUTRITION_PROFILE]->(n:NutritionProfile)
-RETURN i.name AS 食材, n.description AS 营养档案
-""",
-
-    "ingredient_health_benefits": """
-MATCH (i:Ingredient {name: $ingredient_name})-[:HAS_HEALTH_BENEFIT]->(h:HealthBenefit)
-RETURN i.name AS 食材, collect(h.name) AS 功效
-""",
-
-    "ingredient_complete_info": """
-MATCH (i:Ingredient {name: $ingredient_name})
-OPTIONAL MATCH (i)-[:HAS_NUTRITION_PROFILE]->(n:NutritionProfile)
-OPTIONAL MATCH (i)-[:HAS_HEALTH_BENEFIT]->(h:HealthBenefit)
-RETURN i.name AS 食材,
-       n.description AS 营养档案,
-       collect(DISTINCT h.name) AS 功效
-""",
-
-    # ==================== 7. 统计分析查询 ====================
-
-    "most_used_cooking_methods": """
-MATCH (d:Dish)-[:USES_METHOD]->(m:CookingMethod)
-WITH m.name AS 烹饪方法, count(d) AS 使用次数
-RETURN 烹饪方法, 使用次数
-ORDER BY 使用次数 DESC LIMIT 10
-""",
-
-    "most_popular_flavors": """
-MATCH (d:Dish)-[:HAS_FLAVOR]->(f:Flavor)
-WITH f.name AS 口味, count(d) AS 菜品数量
-RETURN 口味, 菜品数量
-ORDER BY 菜品数量 DESC LIMIT 10
-""",
-
-    "ingredient_usage_count": """
-MATCH (d:Dish)-[r]->(i:Ingredient {name: $ingredient_name})
-WHERE type(r) IN ['HAS_MAIN_INGREDIENT', 'HAS_AUX_INGREDIENT']
-WITH count(DISTINCT d) AS 菜品数量
-RETURN 菜品数量
-""",
-
-    "dishes_count_by_type": """
-MATCH (d:Dish)-[:BELONGS_TO_TYPE]->(t:DishType)
-WITH t.name AS 菜品类型, count(d) AS 菜品数量
-RETURN 菜品类型, 菜品数量
-ORDER BY 菜品数量 DESC
-""",
-
-    # ==================== 8. 综合推荐查询 ====================
-
-    "dishes_with_ingredients": """
-MATCH (d:Dish)-[r:HAS_MAIN_INGREDIENT]->(i:Ingredient {name: $ingredient_name})
-RETURN d.name AS 菜名, d.instructions AS 做法, d.cook_time AS 耗时
-LIMIT 10
-""",
-
-    "similar_dishes": """
-MATCH (d1:Dish {name: $dish_name})-[:HAS_FLAVOR]->(f:Flavor)<-[:HAS_FLAVOR]-(d2:Dish)
-WHERE d1 <> d2
-WITH d2, count(f) AS 共同口味数
-RETURN d2.name AS 相似菜品, 共同口味数
-ORDER BY 共同口味数 DESC LIMIT 10
-""",
-
-    "similar_dishes_by_method": """
-MATCH (d1:Dish {name: $dish_name})-[:USES_METHOD]->(m:CookingMethod)<-[:USES_METHOD]-(d2:Dish)
-WHERE d1 <> d2
-RETURN d2.name AS 相似菜品, m.name AS 共同工艺
-LIMIT 10
+    "symptom_frequency": """
+MATCH (s:Symptom {name: $symptom_name})<-[:HAS_SYMPTOM]-(d:Disease)
+WITH count(DISTINCT d) AS 相关疾病数
+RETURN 相关疾病数
 """,
 }

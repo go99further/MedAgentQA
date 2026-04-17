@@ -74,6 +74,10 @@ class OverallState(TypedDict, total=False):
     steps: Annotated[List[str], add]
     history: Annotated[List[HistoryRecord], update_history]
     route_type: Optional[str]
+    # Evidence Verifier fields (Agentic RAG)
+    verifier_decision: str
+    refine_round: int
+    refined_queries: List[str]
 
 
 class OutputState(TypedDict, total=False):

@@ -3,6 +3,7 @@ from .node import (
     VerifierStrategy,
     DefaultVerifierStrategy,
     create_evidence_verifier_node,
+    create_graphrag_evidence_verifier_node,
 )
 
 __all__ = [
@@ -10,4 +11,5 @@ __all__ = [
     "VerifierStrategy",
     "DefaultVerifierStrategy",
     "create_evidence_verifier_node",
+    "create_graphrag_evidence_verifier_node",
 ]

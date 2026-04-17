@@ -2,17 +2,18 @@ from typing import Any, Callable, Coroutine
 
 from ...components.state import OverallState
 
+_SAFE_REFUSAL = (
+    "抱歉，未能从知识图谱中检索到足够可靠的信息来回答您的问题。"
+    "建议您咨询专业医生或医疗机构获取准确的医疗建议。"
+    "以上信息仅供参考，不构成医疗诊断或治疗建议。如有不适，请及时就医并遵医嘱。"
+)
+
 
 def create_final_answer_node() -> (
     Callable[[OverallState], Coroutine[Any, Any, dict[str, Any]]]
 ):
     """
     Create a final_answer node for a LangGraph workflow.
-
-    Parameters
-    ----------
-    llm : BaseChatModel
-        The LLM do perform processing.
 
     Returns
     -------
@@ -22,10 +23,13 @@ def create_final_answer_node() -> (
 
     async def final_answer(state: OverallState) -> dict[str, Any]:
         """
-        Construct a final answer.
+        Construct a final answer. Handles Evidence Verifier REFUSE decision.
         """
-
-        answer = state.get("summary", " ")
+        verifier_decision = state.get("verifier_decision", "")
+        if verifier_decision == "safe_refusal":
+            answer = _SAFE_REFUSAL
+        else:
+            answer = state.get("summary", " ")
 
         history_record = {
             "question": state.get("question", ""),

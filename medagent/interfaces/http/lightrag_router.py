@@ -48,7 +48,7 @@ async def query_lightrag(request: LightRAGQueryRequest):
     curl -X POST "http://localhost:8000/api/v1/lightrag/query" \\
       -H "Content-Type: application/json" \\
       -d '{
-        "query": "红烧肉怎么做？",
+        "query": "高血压有哪些症状？",
         "mode": "hybrid",
         "top_k": 10,
         "stream": false
@@ -100,7 +100,7 @@ async def query_lightrag_stream(request: LightRAGQueryRequest):
     curl -X POST "http://localhost:8000/api/v1/lightrag/query-stream" \\
       -H "Content-Type: application/json" \\
       -d '{
-        "query": "红烧肉怎么做？",
+        "query": "高血压有哪些症状？",
         "mode": "hybrid",
         "top_k": 10
       }'
@@ -172,8 +172,8 @@ async def insert_documents(request: LightRAGInsertRequest):
       -H "Content-Type: application/json" \\
       -d '{
         "documents": [
-          "红烧肉是一道经典的中华料理...",
-          "宫保鸡丁起源于四川..."
+          "高血压的常见症状包括头痛、头晕...",
+          "高血压是慢性病，需长期管理..."
         ]
       }'
     ```
@@ -257,7 +257,7 @@ async def get_index_stats():
 
 
 @router.post("/test-modes")
-async def test_all_modes(query: str = "红烧肉怎么做？"):
+async def test_all_modes(query: str = "高血压有哪些症状？"):
     """
     测试所有检索模式并返回对比结果
 
@@ -274,7 +274,7 @@ async def test_all_modes(query: str = "红烧肉怎么做？"):
     Examples
     --------
     ```bash
-    curl -X POST "http://localhost:8000/api/v1/lightrag/test-modes?query=红烧肉怎么做？"
+    curl -X POST "http://localhost:8000/api/v1/lightrag/test-modes?query=高血压有哪些症状？"
     ```
     """
     try:

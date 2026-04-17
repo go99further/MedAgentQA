@@ -12,19 +12,15 @@ from pydantic import BaseModel, Field
 router = APIRouter(prefix="/knowledge", tags=["knowledge"])
 
 
-# Vector store models ---------------------------------------------------------
-class RecipeModel(BaseModel):
-    """Recipe payload stored in the vector knowledge base."""
+# Medical document models ---------------------------------------------------------
+class MedicalDocModel(BaseModel):
+    """Medical document payload stored in the vector knowledge base."""
 
-    id: Optional[str] = Field(None, description="Recipe identifier")
-    name: str = Field(..., description="Recipe name")
-    category: Optional[str] = Field(None, description="Category")
-    difficulty: Optional[str] = Field(None, description="Difficulty level")
-    time: Optional[str] = Field(None, description="Cooking time")
-    ingredients: Optional[List[str]] = Field(None, description="Ingredient list")
-    steps: Optional[List[str]] = Field(None, description="Preparation steps")
-    tips: Optional[str] = Field(None, description="Cooking tips")
-    nutrition: Optional[Dict[str, Any]] = Field(None, description="Nutrition facts")
+    id: Optional[str] = Field(None, description="Document identifier")
+    question: str = Field(..., description="Medical question")
+    answer: str = Field(..., description="Medical answer")
+    category: Optional[str] = Field(None, description="Medical category")
+    source: Optional[str] = Field(None, description="Data source")
 
 
 class SearchRequest(BaseModel):
@@ -73,56 +69,48 @@ def get_knowledge_service():
     return KnowledgeService()
 
 
-@lru_cache
-def get_neo4j_qa_service():
-    """Return the Neo4j QA service."""
-    from medagent.infrastructure.knowledge.recipe_kg import Neo4jQAService
-
-    return Neo4jQAService()
-
-
 # Vector store CRUD -----------------------------------------------------------
-@router.post("/recipes", status_code=201)
-async def add_recipe(
-    recipe: RecipeModel,
+@router.post("/documents", status_code=201)
+async def add_medical_document(
+    doc: MedicalDocModel,
     service=Depends(get_knowledge_service),
 ) -> Dict[str, Any]:
-    """Add a single recipe to the vector knowledge base."""
+    """Add a single medical document to the vector knowledge base."""
     try:
-        if not recipe.id:
+        if not doc.id:
             import uuid
 
-            recipe.id = f"recipe_{uuid.uuid4().hex[:8]}"
+            doc.id = f"doc_{uuid.uuid4().hex[:8]}"
 
-        success = await service.add_recipe(recipe_id=recipe.id, recipe_data=recipe.dict())
+        success = await service.add_document(doc_id=doc.id, doc_data=doc.dict())
         if not success:
-            raise HTTPException(status_code=500, detail="Failed to add recipe")
+            raise HTTPException(status_code=500, detail="Failed to add document")
 
-        return {"status": "success", "message": "Recipe added", "recipe_id": recipe.id}
+        return {"status": "success", "message": "Document added", "doc_id": doc.id}
     except HTTPException:
         raise
     except Exception as exc:
-        logger.error(f"Error adding recipe: {exc}")
+        logger.error(f"Error adding document: {exc}")
         raise HTTPException(status_code=500, detail=str(exc))
 
 
-@router.post("/recipes/batch", status_code=201)
-async def add_recipes_batch(
-    recipes: List[RecipeModel],
+@router.post("/documents/batch", status_code=201)
+async def add_documents_batch(
+    docs: List[MedicalDocModel],
     service=Depends(get_knowledge_service),
 ) -> Dict[str, Any]:
-    """Add recipes in batch."""
+    """Add medical documents in batch."""
     try:
         import uuid
 
-        for recipe in recipes:
-            if not recipe.id:
-                recipe.id = f"recipe_{uuid.uuid4().hex[:8]}"
+        for doc in docs:
+            if not doc.id:
+                doc.id = f"doc_{uuid.uuid4().hex[:8]}"
 
-        result = await service.add_recipes_batch([recipe.dict() for recipe in recipes])
+        result = await service.add_documents_batch([doc.dict() for doc in docs])
         return {
             "status": "success",
-            "message": f"Inserted {result['success']} recipes",
+            "message": f"Inserted {result['success']} documents",
             "statistics": result,
         }
     except Exception as exc:
@@ -144,18 +132,18 @@ async def search_knowledge(
         raise HTTPException(status_code=500, detail=str(exc))
 
 
-@router.delete("/recipes/{recipe_id}")
-async def delete_recipe(
-    recipe_id: str,
+@router.delete("/documents/{doc_id}")
+async def delete_document(
+    doc_id: str,
     service=Depends(get_knowledge_service),
 ) -> Dict[str, Any]:
-    """Delete a recipe."""
+    """Delete a medical document."""
     try:
-        success = await service.delete_recipe(recipe_id)
+        success = await service.delete_document(doc_id)
         if not success:
-            raise HTTPException(status_code=404, detail="Recipe not found or deletion failed")
+            raise HTTPException(status_code=404, detail="Document not found or deletion failed")
 
-        return {"status": "success", "message": f"Recipe {recipe_id} deleted"}
+        return {"status": "success", "message": f"Document {doc_id} deleted"}
     except HTTPException:
         raise
     except Exception as exc:
@@ -194,44 +182,4 @@ async def clear_knowledge_base(
         raise
     except Exception as exc:
         logger.error(f"Clear error: {exc}")
-        raise HTTPException(status_code=500, detail=str(exc))
-
-
-# Neo4j endpoints -------------------------------------------------------------
-@router.get("/graph", response_model=GraphResponse)
-async def get_default_graph(
-    refresh: bool = False,
-    service=Depends(get_neo4j_qa_service),
-) -> GraphResponse:
-    """Return the default Neo4j graph snapshot."""
-    try:
-        graph_payload = service.get_default_graph(refresh=refresh)
-        return GraphResponse(**graph_payload)
-    except Exception as exc:
-        logger.error(f"Graph retrieval error: {exc}")
-        raise HTTPException(status_code=500, detail=str(exc))
-
-
-@router.post("/graph/qa", response_model=QAResponse)
-async def qa_over_graph(
-    request: QARequest,
-    service=Depends(get_neo4j_qa_service),
-) -> QAResponse:
-    """Run natural-language QA over the Neo4j graph."""
-    try:
-        qa_payload = service.ask(request.query)
-        graph_payload = (
-            service.get_default_graph(refresh=request.refresh_graph)
-            if request.include_graph
-            else None
-        )
-
-        return QAResponse(
-            answer=qa_payload.get("answer", ""),
-            question_type=qa_payload.get("question_type", ""),
-            cypher=qa_payload.get("cypher", []),
-            graph=GraphResponse(**graph_payload) if graph_payload else None,
-        )
-    except Exception as exc:
-        logger.error(f"QA error: {exc}")
         raise HTTPException(status_code=500, detail=str(exc))

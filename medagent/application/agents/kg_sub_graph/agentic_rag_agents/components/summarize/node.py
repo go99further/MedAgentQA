@@ -135,7 +135,7 @@ def create_summarization_node(
 
         sections: List[str] = []
         if narrative_sections:
-            sections.append("### 川菜概览\n" + "\n\n".join(narrative_sections))
+            sections.append("### 知识图谱查询结果\n" + "\n\n".join(narrative_sections))
         if metric_sections:
             sections.append("### 数据统计\n" + "\n\n".join(metric_sections))
         if error_sections:

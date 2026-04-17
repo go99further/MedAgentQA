@@ -278,3 +278,62 @@ def create_evidence_verifier_node(
         }
 
     return evidence_verifier
+
+
+def create_graphrag_evidence_verifier_node(
+    llm: BaseChatModel,
+    max_refine_rounds: int = 2,
+):
+    """
+    GraphRAG 专用 Evidence Verifier。
+
+    检查 summarize 节点产出的 summary 字段是否有实质内容：
+    - 空 summary 或 "No data to summarize." → REFINE（重新规划查询）
+    - 达到最大重试次数 → REFUSE（安全拒绝）
+    - 否则 → PROCEED
+    """
+
+    async def graphrag_evidence_verifier(state: Dict[str, Any]) -> Dict[str, Any]:
+        question = state.get("question", "")
+        refine_round: int = state.get("refine_round", 0)
+        refined_queries: List[str] = list(state.get("refined_queries") or [])
+        summary: str = state.get("summary", "").strip()
+
+        NO_DATA_MARKERS = ("No data to summarize", "暂未查询到", "未查询到相关")
+
+        if refine_round >= max_refine_rounds:
+            verifier_logger.info("GraphRAG Verifier: max rounds reached → REFUSE")
+            return {
+                "verifier_decision": VerifierDecision.REFUSE,
+                "question": question,
+                "refine_round": refine_round,
+                "refined_queries": refined_queries,
+                "steps": ["evidence_verifier"],
+            }
+
+        if not summary or any(m in summary for m in NO_DATA_MARKERS):
+            refined_q = await _generate_refine_query(llm, question, [], refined_queries)
+            refined_queries.append(refined_q)
+            verifier_logger.info(
+                "GraphRAG Verifier: empty/no-data summary → REFINE round {} → '{}'",
+                refine_round + 1,
+                refined_q[:80],
+            )
+            return {
+                "verifier_decision": VerifierDecision.REFINE,
+                "question": refined_q,
+                "refine_round": refine_round + 1,
+                "refined_queries": refined_queries,
+                "steps": ["evidence_verifier"],
+            }
+
+        verifier_logger.info("GraphRAG Verifier: summary has content → PROCEED")
+        return {
+            "verifier_decision": VerifierDecision.PROCEED,
+            "question": question,
+            "refine_round": refine_round,
+            "refined_queries": refined_queries,
+            "steps": ["evidence_verifier"],
+        }
+
+    return graphrag_evidence_verifier

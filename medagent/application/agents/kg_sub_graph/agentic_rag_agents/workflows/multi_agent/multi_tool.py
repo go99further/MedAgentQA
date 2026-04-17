@@ -32,6 +32,7 @@ from medagent.application.agents.kg_sub_graph.agentic_rag_agents.components.tool
 from medagent.application.agents.kg_sub_graph.agentic_rag_agents.components.evidence_verifier import (
     VerifierDecision,
     create_evidence_verifier_node,
+    create_graphrag_evidence_verifier_node,
 )
 # 导入 text2cypher 节点
 from medagent.application.agents.kg_sub_graph.agentic_rag_agents.components.cypher_tools import create_cypher_query_node
@@ -149,7 +150,15 @@ def create_multi_tool_workflow(
 
     final_answer = create_final_answer_node()
 
-    # 创建状态图运行时会维护一个“全局状态”（OverallState），入口状态类型是 InputState，最终产出是 OutputState。节点函数读写的就是这个状态。
+    graphrag_verifier = create_graphrag_evidence_verifier_node(llm=llm)
+
+    def graphrag_verifier_edge(state: OverallState) -> str:
+        decision = state.get("verifier_decision", "")
+        if decision == VerifierDecision.REFINE:
+            return "planner"
+        return "final_answer"  # PROCEED or REFUSE both go to final_answer
+
+    # 创建状态图运行时会维护一个"全局状态"（OverallState），入口状态类型是 InputState，最终产出是 OutputState。节点函数读写的就是这个状态。
     main_graph_builder = StateGraph(OverallState, input=InputState, output=OutputState)
 
     main_graph_builder.add_node(guardrails)# 安全护栏敏感内容过滤、权限/配额校验
@@ -161,6 +170,7 @@ def create_multi_tool_workflow(
     main_graph_builder.add_node(summarize) # 总结
     main_graph_builder.add_node(tool_selection) #工具选择的中间控制节点（通常结合 planner 的输出）。
     main_graph_builder.add_node(final_answer)
+    main_graph_builder.add_node("evidence_verifier", graphrag_verifier)  # Agentic RAG
 
 
     # 添加边
@@ -179,7 +189,8 @@ def create_multi_tool_workflow(
     main_graph_builder.add_edge("predefined_cypher", "summarize")
     main_graph_builder.add_edge("customer_tools", "summarize")
     main_graph_builder.add_edge("text2sql_query", "summarize")
-    main_graph_builder.add_edge("summarize", "final_answer")
+    main_graph_builder.add_edge("summarize", "evidence_verifier")  # ← Agentic RAG
+    main_graph_builder.add_conditional_edges("evidence_verifier", graphrag_verifier_edge)
 
     main_graph_builder.add_edge("final_answer", END)
 

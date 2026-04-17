@@ -1,5 +1,5 @@
 """
-Tool selection node for orchestrating recipe knowledge graph tools.
+Tool selection node for orchestrating medical knowledge graph tools.
 
 This node inspects an incoming question, asks the LLM to pick an appropriate tool
 (template-based Cypher, text-to-Cypher, or customer-specific tools), and routes
@@ -54,16 +54,16 @@ SQL_KEYWORDS = [
 SQL_PATTERN = re.compile(r"\b(select|count|sum|avg|max|min|group\s+by|order\s+by)\b", re.IGNORECASE)
 
 DESCRIPTIVE_KEYWORDS = [
-    "口味",
-    "特色",
-    "风味",
-    "营养",
+    "症状",
+    "表现",
+    "特征",
     "功效",
+    "作用",
     "健康",
     "介绍",
     "概况",
-    "食材",
-    "材料",
+    "病因",
+    "机制",
 ]
 
 
@@ -119,7 +119,7 @@ def create_tool_selection_node(
 
         # Heuristic fast path for结构化查询
         if any(keyword in question_text for keyword in DESCRIPTIVE_KEYWORDS):
-            logger.info("检测到菜谱描述类需求，优先使用 GraphRAG。")
+            logger.info("检测到医疗描述类需求，优先使用 GraphRAG。")
             return _make_command(
                 "customer_tools",
                 {

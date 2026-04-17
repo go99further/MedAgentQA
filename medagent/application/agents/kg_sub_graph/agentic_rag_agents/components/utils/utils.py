@@ -101,14 +101,14 @@ def _lookup_cell(
     return ""
 
 
-def _format_recipe_schema_from_docs() -> str:
+def _format_medical_schema_from_docs() -> str:
     """
-    Build a concise, LLM-friendly schema summary based on docs/recipe_kg_schema.md.
+    Build a concise, LLM-friendly schema summary based on docs/medical_kg_schema.md.
     """
     doc_path = (
         Path(__file__).resolve().parents[6]
         / "docs"
-        / "recipe_kg_schema.md"
+        / "medical_kg_schema.md"
     )
     if not doc_path.exists():
         return ""
@@ -134,7 +134,7 @@ def _format_recipe_schema_from_docs() -> str:
     summary_lines: list[str] = []
 
     if node_rows:
-        summary_lines.append("Recipe KG node types:")
+        summary_lines.append("Medical KG node types:")
         for cells in node_rows:
             label = _lookup_cell(cells, node_header, ["Label"], fallback_index=0)
             meaning = _lookup_cell(
@@ -217,7 +217,7 @@ def _format_recipe_schema_from_docs() -> str:
 def retrieve_and_parse_schema_from_graph_for_prompts(graph: Neo4jGraph) -> str:
     """
     Retrieve the runtime schema, clean it for prompt usage, and enrich
-    it with curated information from docs/recipe_kg_schema.md.
+    it with curated information from docs/medical_kg_schema.md.
     """
     schema: str = graph.get_schema
 
@@ -228,7 +228,7 @@ def retrieve_and_parse_schema_from_graph_for_prompts(graph: Neo4jGraph) -> str:
 
     schema = schema.replace("{", "[").replace("}", "]")
 
-    doc_summary = _format_recipe_schema_from_docs()
+    doc_summary = _format_medical_schema_from_docs()
     if doc_summary:
         return f"{doc_summary}\n\n{schema}"
 

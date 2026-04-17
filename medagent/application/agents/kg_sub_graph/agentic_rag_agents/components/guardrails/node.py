@@ -60,17 +60,20 @@ def create_guardrails_node(
         question = state.get("question", "")
 
         heuristics_keywords = [
-            "菜",
-            "菜谱",
-            "食材",
-            "烹饪",
-            "做法",
-            "步骤",
-            "口味",
-            "炒",
-            "煮",
-            "炖",
-            "蒸",
+            "症状",
+            "疾病",
+            "药物",
+            "治疗",
+            "诊断",
+            "手术",
+            "检查",
+            "化验",
+            "血压",
+            "血糖",
+            "心脏",
+            "肺",
+            "肝",
+            "肾",
             "统计",
             "多少",
             "用量",
@@ -81,7 +84,7 @@ def create_guardrails_node(
         lowered = question.lower()
         if any(keyword in question for keyword in heuristics_keywords) or "?" in question or "？" in question:
             logger.info(
-                "Guardrails 前置规则命中菜谱/统计关键词，直接进入 planner。",
+                "Guardrails 前置规则命中医疗/统计关键词，直接进入 planner。",
                 extra={"question": question},
             )
             return {"next_action": "planner", "summary": None, "steps": ["guardrails"]}
@@ -100,20 +103,20 @@ def create_guardrails_node(
         if decision == "end":
             if any(keyword in question for keyword in heuristics_keywords) or "?" in question or "？" in question:
                 logger.info(
-                    "Guardrails 触发兜底：问题含有菜谱领域关键词，强制路由到 planner。",
+                    "Guardrails 触发兜底：问题含有医疗领域关键词，强制路由到 planner。",
                     extra={"question": question},
                 )
                 decision = "planner"
 
         if decision == "end":
-            summary = "抱歉，暂时没有关于该菜谱的消息，可以在问别的哦~"
+            summary = "抱歉，该问题超出医疗健康咨询范围，暂时无法回答。如有健康问题，建议咨询专业医生。"
 
         decision_info = {
             "next_action": decision,
             "summary": summary,
             "steps": ["guardrails"],
         }
-        
+
         logger.info(f"Guardrails Decision Info: {decision_info}")
 
         return decision_info
