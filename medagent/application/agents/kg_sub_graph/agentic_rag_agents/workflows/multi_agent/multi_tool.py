@@ -28,6 +28,11 @@ from medagent.application.agents.kg_sub_graph.agentic_rag_agents.components.guar
 from medagent.application.agents.kg_sub_graph.agentic_rag_agents.components.planner import create_planner_node
 # 导入工具选择节点
 from medagent.application.agents.kg_sub_graph.agentic_rag_agents.components.tool_selection import create_tool_selection_node
+# 导入 Evidence Verifier
+from medagent.application.agents.kg_sub_graph.agentic_rag_agents.components.evidence_verifier import (
+    VerifierDecision,
+    create_evidence_verifier_node,
+)
 # 导入 text2cypher 节点
 from medagent.application.agents.kg_sub_graph.agentic_rag_agents.components.cypher_tools import create_cypher_query_node
 # 导入Cypher示例检索器基类
@@ -217,6 +222,10 @@ class KBWorkflowState(TypedDict):
     answer: str
     steps: Annotated[List[str], add]
     sources: Annotated[List[str], add]
+    # Evidence Verifier fields
+    verifier_decision: str
+    refine_round: int
+    refined_queries: List[str]
 
 
 class KBOutputState(TypedDict):
@@ -368,13 +377,16 @@ def create_kb_multi_tool_workflow(
             (
                 "system",
                 (
-                    "你是医疗健康咨询助手，需要依据给定检索结果作答。请遵循：\n"
+                    "你是医疗健康咨询助手，需要依据给定检索结果作答。请严格遵循以下规则：\n"
                     "1. 仅讨论疾病诊断、症状识别、药物信息、诊疗方案、科室导诊等医学相关内容，不要给出超出医学范围的建议。\n"
                     "2. 若信息不足，说明知识库暂无相关记载，并建议向其他模块查询或前往医院就诊。\n"
                     "3. 语气专业、友好，回答使用简体中文。\n"
                     "4. 如问题超出医疗健康范围，应委婉拒答并说明理由。\n"
                     "5. 区分并融合来自不同数据源的要点，避免重复叙述。\n"
-                    "6. 在结尾列出引用来源名称或编号（如有）。"
+                    "6. 在结尾列出引用来源名称或编号（如有）。\n"
+                    "7. 【必须】在回答末尾包含免责声明：'以上信息仅供参考，不构成医疗诊断或治疗建议。如有不适，请及时就医并遵医嘱。'\n"
+                    "8. 【禁止】做出确定性诊断断言，如'你得了XX病'、'确诊为XX'、'肯定是XX'等表述。\n"
+                    "9. 回答应结构化分段，使用小标题（如'可能原因'、'建议处理'、'就医指导'）使内容清晰易读。"
                 ),
             ),
             (
@@ -774,6 +786,15 @@ def create_kb_multi_tool_workflow(
             summary = state.get("summary") or "抱歉，该问题暂时无法回答。"
             return {"answer": summary, "sources": [], "steps": ["finalize"]}
 
+        # Evidence Verifier 安全拒绝：无可靠证据
+        if state.get("verifier_decision") == VerifierDecision.REFUSE:
+            refusal = (
+                "抱歉，经过多轮检索仍未找到足够可靠的医疗信息来回答您的问题。"
+                "建议您前往正规医疗机构就诊，由专业医生进行评估。"
+                "\n\n以上信息仅供参考，不构成医疗诊断或治疗建议。如有不适，请及时就医并遵医嘱。"
+            )
+            return {"answer": refusal, "sources": [], "steps": ["finalize"]}
+
         milvus_results = state.get("milvus_results", [])
         postgres_results = state.get("postgres_results", [])
         local_results = state.get("local_results", []) or (milvus_results + postgres_results)
@@ -831,7 +852,13 @@ def create_kb_multi_tool_workflow(
         route = state.get("route", "local")
         if route in {"hybrid", "external"} and allow_external_search and external_url:
             return "external_search"
-        return "finalize"
+        return "evidence_verifier"
+
+    def verifier_edge(state: KBWorkflowState) -> str:
+        decision = state.get("verifier_decision", "")
+        if decision == VerifierDecision.REFINE:
+            return "local_search"
+        return "finalize"  # PROCEED or REFUSE both go to finalize
 
     graph_builder = StateGraph(
         KBWorkflowState,
@@ -839,17 +866,21 @@ def create_kb_multi_tool_workflow(
         output=KBOutputState,
     )
 
+    evidence_verifier = create_evidence_verifier_node(llm=llm)
+
     graph_builder.add_node("guardrails", guardrails)
     graph_builder.add_node("kb_router", router)
     graph_builder.add_node("local_search", local_search)
     graph_builder.add_node("external_search", external_search)
+    graph_builder.add_node("evidence_verifier", evidence_verifier)
     graph_builder.add_node("finalize", finalize)
 
     graph_builder.add_edge(START, "guardrails")
     graph_builder.add_conditional_edges("guardrails", guardrails_router)
     graph_builder.add_conditional_edges("kb_router", router_edge)
     graph_builder.add_conditional_edges("local_search", local_edge)
-    graph_builder.add_edge("external_search", "finalize")
+    graph_builder.add_edge("external_search", "evidence_verifier")
+    graph_builder.add_conditional_edges("evidence_verifier", verifier_edge)
     graph_builder.add_edge("finalize", END)
 
     return graph_builder.compile()

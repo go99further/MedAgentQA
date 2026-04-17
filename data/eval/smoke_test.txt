@@ -1,0 +1,4 @@
+Route: graphrag-query
+Answer length: 21
+
+No data to summarize.

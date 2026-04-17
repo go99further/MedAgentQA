@@ -18,9 +18,8 @@ from langchain_core.messages import BaseMessage
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import END, START, StateGraph
 from medagent.application.agents.lg_states import AgentState, InputState, Router, GradeHallucinations
-# TODO: replace with a medical-domain CypherRetriever once available
-from medagent.application.agents.kg_sub_graph.agentic_rag_agents.retrievers.cypher_examples.recipe_retriever import \
-    RecipeCypherRetriever as MedicalCypherRetriever
+from medagent.application.agents.kg_sub_graph.agentic_rag_agents.retrievers.cypher_examples.medical_retriever import \
+    MedicalCypherRetriever
 from medagent.application.agents.kg_sub_graph.agentic_rag_agents.components.planner.node import create_planner_node
 from medagent.application.agents.kg_sub_graph.agentic_rag_agents.workflows.multi_agent.multi_tool import (
     create_multi_tool_workflow,
@@ -225,7 +224,14 @@ def route_query(
         return "respond_to_general_query"
     elif _type == "additional-query":
         return "get_additional_info"
-    elif _type in ("graphrag-query", "text2sql-query"):  # 图查询或结构化问数
+    elif _type in ("graphrag-query", "text2sql-query"):
+        # Ablation: if kg_enabled=False in configurable, fallback to kb-query
+        cfg = {}
+        if hasattr(state, "config") and state.config:
+            cfg = state.config.get("configurable", {})
+        if cfg.get("kg_enabled") is False:
+            logger.info("[Ablation] KG disabled, falling back graphrag/text2sql → kb-query")
+            return "create_kb_query"
         return "create_research_plan"
     elif _type == "image-query":
         return "create_image_query"
@@ -727,6 +733,14 @@ async def create_kb_query(
         else settings.KB_SIMILARITY_THRESHOLD
     )
     kb_filter_expr = config_opts.get("kb_filter_expr")
+
+    # Ablation switches from configurable
+    rerank_enabled = config_opts.get("rerank_enabled", settings.RERANK_ENABLED)
+    cache_enabled = config_opts.get("cache_enabled", True)
+    if rerank_enabled is False:
+        logger.info("[Ablation] Rerank disabled for this request")
+    if cache_enabled is False:
+        logger.info("[Ablation] Cache disabled for this request")
 
     knowledge_service: Optional[KnowledgeService] = None
     try:

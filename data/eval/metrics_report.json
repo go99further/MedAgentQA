@@ -1,159 +1,171 @@
 {
   "_meta": {
-    "source": "data/eval/ablation_results.json",
+    "source": "data/eval/agent_ablation_results.json",
     "script": "compute_metrics.py v1.0"
   },
   "versions": {
     "v0": {
-      "n_samples": 50,
-      "medical_safety_rate": 0.34,
-      "structured_answer_rate": 0.08,
-      "dept_suggestion_rate": 0.44,
-      "no_diagnostic_claim_rate": 0.98,
-      "avg_answer_length": 726.4,
-      "avg_safety_score": 0.503,
-      "pass_rate": 0.3,
+      "n_samples": 48,
+      "medical_safety_rate": 0.292,
+      "structured_answer_rate": 0.125,
+      "dept_suggestion_rate": 0.312,
+      "no_diagnostic_claim_rate": 1.0,
+      "avg_answer_length": 433.6,
+      "avg_safety_score": 0.375,
+      "pass_rate": 0.271,
       "authority_distribution": {
-        "high": 4,
-        "neutral": 44,
-        "low": 2
+        "high": 8,
+        "neutral": 40,
+        "low": 0
       },
       "route_distribution": {
-        "kb-query": 36,
-        "graphrag-query": 14
+        "graphrag-query": 18,
+        "kb-query": 17,
+        "additional-query": 12,
+        "file-query": 1
       },
       "failure_distribution": {
-        "missing_safety_disclaimer": 31,
-        "pass": 15,
-        "unstructured_response": 3,
-        "dangerous_diagnostic_claim": 1
+        "missing_safety_disclaimer": 34,
+        "pass": 13,
+        "unstructured_response": 1
       }
     },
     "v1": {
-      "n_samples": 50,
-      "medical_safety_rate": 0.4,
-      "structured_answer_rate": 0.12,
-      "dept_suggestion_rate": 0.42,
-      "no_diagnostic_claim_rate": 0.96,
-      "avg_answer_length": 726.4,
-      "avg_safety_score": 0.522,
-      "pass_rate": 0.3,
+      "n_samples": 48,
+      "medical_safety_rate": 0.292,
+      "structured_answer_rate": 0.042,
+      "dept_suggestion_rate": 0.292,
+      "no_diagnostic_claim_rate": 0.958,
+      "avg_answer_length": 403.2,
+      "avg_safety_score": 0.345,
+      "pass_rate": 0.229,
       "authority_distribution": {
         "high": 6,
-        "neutral": 41,
-        "low": 3
+        "neutral": 42,
+        "low": 0
       },
       "route_distribution": {
-        "kb-query": 36,
-        "graphrag-query": 14
+        "graphrag-query": 17,
+        "kb-query": 16,
+        "additional-query": 15
       },
       "failure_distribution": {
-        "missing_safety_disclaimer": 30,
-        "pass": 15,
-        "unstructured_response": 5
+        "missing_safety_disclaimer": 34,
+        "pass": 11,
+        "dangerous_diagnostic_claim": 2,
+        "unstructured_response": 1
       }
     },
     "v2": {
       "n_samples": 50,
-      "medical_safety_rate": 0.6,
+      "medical_safety_rate": 0.2,
       "structured_answer_rate": 0.08,
-      "dept_suggestion_rate": 0.72,
-      "no_diagnostic_claim_rate": 0.96,
-      "avg_answer_length": 1115.5,
-      "avg_safety_score": 0.634,
-      "pass_rate": 0.48,
+      "dept_suggestion_rate": 0.24,
+      "no_diagnostic_claim_rate": 1.0,
+      "avg_answer_length": 408.1,
+      "avg_safety_score": 0.316,
+      "pass_rate": 0.18,
       "authority_distribution": {
-        "high": 8,
-        "neutral": 37,
-        "low": 5
+        "high": 7,
+        "neutral": 43,
+        "low": 0
       },
       "route_distribution": {
-        "kb-query": 36,
-        "graphrag-query": 14
+        "graphrag-query": 21,
+        "kb-query": 14,
+        "additional-query": 13,
+        "file-query": 1,
+        "general-query": 1
       },
       "failure_distribution": {
-        "missing_safety_disclaimer": 19,
-        "pass": 24,
-        "unstructured_response": 5,
-        "dangerous_diagnostic_claim": 2
+        "missing_safety_disclaimer": 39,
+        "pass": 9,
+        "unstructured_response": 2
       }
     },
     "v3": {
-      "n_samples": 50,
-      "medical_safety_rate": 0.26,
-      "structured_answer_rate": 0.06,
-      "dept_suggestion_rate": 0.46,
-      "no_diagnostic_claim_rate": 0.98,
-      "avg_answer_length": 724.3,
-      "avg_safety_score": 0.479,
-      "pass_rate": 0.28,
+      "n_samples": 47,
+      "medical_safety_rate": 0.319,
+      "structured_answer_rate": 0.043,
+      "dept_suggestion_rate": 0.298,
+      "no_diagnostic_claim_rate": 0.979,
+      "avg_answer_length": 460.1,
+      "avg_safety_score": 0.362,
+      "pass_rate": 0.234,
       "authority_distribution": {
-        "high": 10,
-        "neutral": 38,
-        "low": 2
+        "high": 7,
+        "neutral": 40,
+        "low": 0
       },
       "route_distribution": {
-        "kb-query": 31,
-        "graphrag-query": 19
+        "graphrag-query": 15,
+        "kb-query": 17,
+        "additional-query": 15
       },
       "failure_distribution": {
-        "missing_safety_disclaimer": 35,
-        "pass": 14,
-        "unstructured_response": 1
+        "missing_safety_disclaimer": 32,
+        "pass": 11,
+        "unstructured_response": 3,
+        "dangerous_diagnostic_claim": 1
       }
     },
     "v4": {
-      "n_samples": 50,
-      "medical_safety_rate": 0.86,
-      "structured_answer_rate": 1.0,
-      "dept_suggestion_rate": 0.92,
-      "no_diagnostic_claim_rate": 0.92,
-      "avg_answer_length": 1023.3,
-      "avg_safety_score": 0.93,
-      "pass_rate": 0.96,
+      "n_samples": 48,
+      "medical_safety_rate": 0.333,
+      "structured_answer_rate": 0.083,
+      "dept_suggestion_rate": 0.292,
+      "no_diagnostic_claim_rate": 1.0,
+      "avg_answer_length": 459.7,
+      "avg_safety_score": 0.375,
+      "pass_rate": 0.271,
       "authority_distribution": {
-        "high": 7,
-        "neutral": 39,
-        "low": 4
+        "high": 6,
+        "neutral": 40,
+        "low": 2
       },
       "route_distribution": {
-        "kb-query": 36,
-        "graphrag-query": 14
+        "graphrag-query": 17,
+        "kb-query": 16,
+        "additional-query": 14,
+        "general-query": 1
       },
       "failure_distribution": {
-        "pass": 48,
-        "missing_safety_disclaimer": 2
+        "missing_safety_disclaimer": 32,
+        "pass": 13,
+        "unstructured_response": 3
       }
     },
     "vFinal": {
-      "n_samples": 50,
-      "medical_safety_rate": 0.6,
-      "structured_answer_rate": 0.96,
-      "dept_suggestion_rate": 0.64,
-      "no_diagnostic_claim_rate": 0.94,
-      "avg_answer_length": 1159.1,
-      "avg_safety_score": 0.791,
-      "pass_rate": 0.7,
+      "n_samples": 47,
+      "medical_safety_rate": 0.362,
+      "structured_answer_rate": 0.128,
+      "dept_suggestion_rate": 0.319,
+      "no_diagnostic_claim_rate": 1.0,
+      "avg_answer_length": 459.7,
+      "avg_safety_score": 0.402,
+      "pass_rate": 0.319,
       "authority_distribution": {
-        "high": 14,
-        "neutral": 32,
-        "low": 4
+        "high": 9,
+        "neutral": 38,
+        "low": 0
       },
       "route_distribution": {
-        "kb-query": 31,
-        "graphrag-query": 19
+        "graphrag-query": 16,
+        "kb-query": 18,
+        "additional-query": 13
       },
       "failure_distribution": {
-        "missing_safety_disclaimer": 15,
-        "pass": 35
+        "missing_safety_disclaimer": 30,
+        "pass": 15,
+        "unstructured_response": 2
       }
     }
   },
   "negative_churn": {
     "total_samples": 50,
-    "pass_to_fail": 3,
-    "fail_to_pass": 23,
-    "net_improvement": 20,
-    "regression_pass_rate": 0.94
+    "pass_to_fail": 2,
+    "fail_to_pass": 4,
+    "net_improvement": 2,
+    "regression_pass_rate": 0.96
   }
 }

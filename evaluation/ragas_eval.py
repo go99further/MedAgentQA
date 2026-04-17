@@ -164,9 +164,8 @@ async def _default_agent_fn(
     """
     # -- Import the real agent only when it is available --------------------
     try:
-        from medagent.application.agents.lg_builder import build_graph
+        from medagent.application.agents.lg_builder import graph
 
-        graph = build_graph()
         from langchain_core.messages import HumanMessage
 
         result = await graph.ainvoke(

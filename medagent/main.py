@@ -1,5 +1,5 @@
 """
-GustoBot FastAPI application entry point.
+MedAgentQA FastAPI application entry point.
 """
 
 import os
@@ -25,7 +25,7 @@ configure_logging(debug=settings.DEBUG)
 application = FastAPI(
     title=settings.APP_NAME,
     version=settings.APP_VERSION,
-    description="Smart culinary assistant powered by a multi-agent architecture",
+    description="Medical QA system powered by a multi-agent architecture with data flywheel evaluation",
     docs_url="/docs",
     redoc_url="/redoc",
 )

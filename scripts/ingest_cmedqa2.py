@@ -436,6 +436,8 @@ def ingest(
     embedding_api_key: Optional[str],
     embedding_base_url: Optional[str],
     embedding_dimension: int,
+    limit: Optional[int] = None,
+    offset: int = 0,
 ) -> Dict[str, Any]:
     """Run the full ingestion pipeline.
 
@@ -484,8 +486,8 @@ def ingest(
     }
 
     # ---- 1. Load CSVs ------------------------------------------------------
-    questions_file = data_dir / "questions.csv"
-    answers_file = data_dir / "answers.csv"
+    questions_file = data_dir / "question.csv"
+    answers_file = data_dir / "answer.csv"
 
     if not questions_file.exists():
         logger.error("Questions file not found: %s", questions_file)
@@ -547,6 +549,21 @@ def ingest(
     logger.info(
         "Merged dataset: %d answer-question pairs", len(merged)
     )
+
+    # ---- 2.5 Apply --limit and --offset filters -----------------------------
+    if vote_col and vote_col in merged.columns:
+        merged = merged.sort_values(vote_col, ascending=False)
+        logger.info("Sorted by %s (descending) for quality-first ingestion", vote_col)
+
+    if offset > 0:
+        merged = merged.iloc[offset:]
+        logger.info("Skipped first %d rows (--offset)", offset)
+
+    if limit is not None:
+        merged = merged.iloc[: limit]
+        logger.info("Limited to %d rows (--limit)", limit)
+
+    logger.info("After filtering: %d answer-question pairs to process", len(merged))
 
     # ---- 3. Chunk answers --------------------------------------------------
     splitter = RecursiveCharacterTextSplitter(
@@ -752,7 +769,7 @@ def parse_args(argv: Optional[List[str]] = None) -> argparse.Namespace:
         "--data-dir",
         type=str,
         default=str(DEFAULT_DATA_DIR),
-        help="Directory containing questions.csv and answers.csv.",
+        help="Directory containing question.csv and answer.csv.",
     )
     parser.add_argument(
         "--milvus-host",
@@ -790,11 +807,26 @@ def parse_args(argv: Optional[List[str]] = None) -> argparse.Namespace:
         default=os.getenv("KB_INGEST_URL", "http://localhost:8000"),
         help="Base URL of the kb_ingest HTTP service.",
     )
+    parser.add_argument(
+        "--limit",
+        type=int,
+        default=None,
+        help="Max number of answers to ingest (sorted by quality). None = all.",
+    )
+    parser.add_argument(
+        "--offset",
+        type=int,
+        default=0,
+        help="Skip the first N answers (for resuming interrupted ingestion).",
+    )
     return parser.parse_args(argv)
 
 
 def main(argv: Optional[List[str]] = None) -> None:
     """CLI entry point."""
+    from dotenv import load_dotenv
+    load_dotenv(override=True)
+
     args = parse_args(argv)
 
     embedding_model = os.getenv("EMBEDDING_MODEL", "text-embedding-3-small")
@@ -827,6 +859,8 @@ def main(argv: Optional[List[str]] = None) -> None:
             embedding_api_key=embedding_api_key,
             embedding_base_url=embedding_base_url,
             embedding_dimension=embedding_dimension,
+            limit=args.limit,
+            offset=args.offset,
         )
     except Exception:
         logger.exception("Ingestion pipeline failed")

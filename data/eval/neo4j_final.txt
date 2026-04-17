@@ -1,0 +1,3 @@
+Success: 376, Errors: 14
+Counts: {'Disease': 30, 'Symptom': 50, 'Drug': 30, 'Department': 15}
+Sample symptoms: ['头痛', '发热', '咳嗽']

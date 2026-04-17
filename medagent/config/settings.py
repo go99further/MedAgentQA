@@ -1,5 +1,5 @@
 """
-Centralised application settings for GustoBot.
+Centralised application settings for MedAgentQA.
 """
 
 from typing import List, Optional, Tuple
@@ -12,7 +12,7 @@ class Settings(BaseSettings):
     """Application wide configuration loaded from environment variables."""
 
     # Application metadata
-    APP_NAME: str = "GustoBot"
+    APP_NAME: str = "MedAgentQA"
     APP_VERSION: str = "0.1.2"
     DEBUG: bool = True
 
@@ -78,7 +78,7 @@ class Settings(BaseSettings):
     # Milvus vector database
     MILVUS_HOST: str = "localhost"
     MILVUS_PORT: int = 19530
-    MILVUS_COLLECTION: str = "recipes"
+    MILVUS_COLLECTION: str = "cmedqa2"
     MILVUS_INDEX_TYPE: str = "IVF_FLAT"
     MILVUS_METRIC_TYPE: str = "IP"
 
@@ -208,7 +208,7 @@ class Settings(BaseSettings):
     NEO4J_MAX_CONNECTION_LIFETIME: Optional[int] = None
     NEO4J_BOOTSTRAP_JSON: bool = True
     NEO4J_BOOTSTRAP_FORCE: bool = False
-    NEO4J_RECIPE_JSON_PATH: str = "data/recipe.json"
+    NEO4J_MEDICAL_JSON_PATH: str = "data/medical.json"
     NEO4J_INGREDIENT_JSON_PATH: Optional[str] = "data/excipients.json"
 
     # Agent behaviour

@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python -c \"import sys, os; output=os.environ.get('CLAUDE_TOOL_OUTPUT',''); sys.exit(0) if 'Results saved to data/eval' not in output and 'saved to' not in output.lower() else os.system('cd G:/github/MedAgentQA && python scripts/run_badcase_analysis.py && echo [Hook] Badcase analysis complete')\""
+          }
+        ]
+      }
+    ]
+  }
+}

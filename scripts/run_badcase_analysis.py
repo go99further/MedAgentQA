@@ -119,7 +119,7 @@ def negative_churn_analysis(v0_results: List[Dict], vf_results: List[Dict]) -> D
 
 
 def main():
-    ablation_path = "data/eval/ablation_results.json"
+    ablation_path = "data/eval/agent_ablation_results.json"
     if not Path(ablation_path).exists():
         print(f"ERROR: {ablation_path} not found. Run ablation study first.")
         sys.exit(1)

@@ -5,7 +5,7 @@ from medagent.application.agents.kg_sub_graph.kg_neo4j_conn import get_neo4j_gra
 from medagent.infrastructure.core.logger import get_logger
 from langchain_openai import ChatOpenAI
 from medagent.config import settings
-from medagent.application.agents.kg_sub_graph.agentic_rag_agents.retrievers.cypher_examples.recipe_retriever import RecipeCypherRetriever
+from medagent.application.agents.kg_sub_graph.agentic_rag_agents.retrievers.cypher_examples.medical_retriever import MedicalCypherRetriever
 from medagent.application.agents.kg_sub_graph.agentic_rag_agents.components.cypher_tools.utils import create_text2cypher_generation_node, create_text2cypher_validation_node, create_text2cypher_execution_node
 
 
@@ -76,7 +76,7 @@ def create_cypher_query_node(
             logger.error(f"failed to get Neo4j graph database connection: {e}")
 
         # 创建自定义检索器实例，根据 Graph Schema 创建 Cypher 示例，用来引导大模型生成正确的 Cypher 查询语句
-        cypher_retriever = RecipeCypherRetriever()
+        cypher_retriever = MedicalCypherRetriever()
 
         # 根据自定义的 Cypher，引导大模型生成当前输入问题的 Cypher 查询语句
         try:
@@ -102,7 +102,7 @@ def create_cypher_query_node(
             }
 
         # 创建自定义检索器，根据 Graph Schema 创建 Cypher语句，用来引导大模型生成正确的 Cypher 查询语句
-        cypher_retriever = RecipeCypherRetriever()
+        cypher_retriever = MedicalCypherRetriever()
 
         # 根据自定义的 Cypher语句，引导大模型生成当前输入问题的 Cypher 查询语句
         cypher_generation = create_text2cypher_generation_node(

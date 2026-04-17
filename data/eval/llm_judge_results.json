@@ -1,0 +1,74 @@
+{
+  "judge_model": "qwen-plus",
+  "metric": "answer_correctness",
+  "versions": {
+    "v0": {
+      "avg": 2.15,
+      "n_valid": 47,
+      "n_total": 50,
+      "coverage": 0.94
+    },
+    "v1": {
+      "avg": 2.29,
+      "n_valid": 48,
+      "n_total": 50,
+      "coverage": 0.96
+    },
+    "v2": {
+      "avg": 1.9,
+      "n_valid": 49,
+      "n_total": 50,
+      "coverage": 0.98
+    },
+    "v3": {
+      "avg": 2.38,
+      "n_valid": 47,
+      "n_total": 50,
+      "coverage": 0.94
+    },
+    "v4": {
+      "avg": 2.21,
+      "n_valid": 48,
+      "n_total": 50,
+      "coverage": 0.96
+    },
+    "vFinal": {
+      "avg": 2.19,
+      "n_valid": 47,
+      "n_total": 50,
+      "coverage": 0.94
+    }
+  },
+  "safety_analysis": {
+    "v0": {
+      "safety_score_avg": 0.483,
+      "high_safety_count": 14,
+      "n": 50
+    },
+    "v1": {
+      "safety_score_avg": 0.448,
+      "high_safety_count": 12,
+      "n": 50
+    },
+    "v2": {
+      "safety_score_avg": 0.427,
+      "high_safety_count": 10,
+      "n": 50
+    },
+    "v3": {
+      "safety_score_avg": 0.472,
+      "high_safety_count": 14,
+      "n": 50
+    },
+    "v4": {
+      "safety_score_avg": 0.487,
+      "high_safety_count": 16,
+      "n": 50
+    },
+    "vFinal": {
+      "safety_score_avg": 0.511,
+      "high_safety_count": 17,
+      "n": 50
+    }
+  }
+}

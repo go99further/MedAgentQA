@@ -19,7 +19,7 @@ class VectorStore:
 
     def __init__(
         self,
-        collection_name: str = "recipes",
+        collection_name: str = "cmedqa2",
         host: str = "localhost",
         port: int = 19530,
         dimension: int = 1536,
@@ -82,7 +82,7 @@ class VectorStore:
             FieldSchema(name="id", dtype=DataType.VARCHAR, is_primary=True, max_length=256),
             FieldSchema(name="embedding", dtype=DataType.FLOAT_VECTOR, dim=self.dimension),
             FieldSchema(name="content", dtype=DataType.VARCHAR, max_length=65535),
-            FieldSchema(name="recipe_id", dtype=DataType.VARCHAR, max_length=256),
+            FieldSchema(name="doc_id", dtype=DataType.VARCHAR, max_length=256),
             FieldSchema(name="name", dtype=DataType.VARCHAR, max_length=512),
             FieldSchema(name="category", dtype=DataType.VARCHAR, max_length=128),
             FieldSchema(name="difficulty", dtype=DataType.VARCHAR, max_length=128),
@@ -91,7 +91,7 @@ class VectorStore:
         # 创建集合schema
         schema = CollectionSchema(
             fields=fields,
-            description="Recipe knowledge base collection"
+            description="Medical knowledge base collection"
         )
 
         # 创建集合
@@ -147,7 +147,7 @@ class VectorStore:
                 ids,
                 embeddings,
                 documents,
-                [_as_varchar(meta.get("recipe_id")) for meta in metadatas],
+                [_as_varchar(meta.get("doc_id")) for meta in metadatas],
                 [_as_varchar(meta.get("name")) for meta in metadatas],
                 [_as_varchar(meta.get("category")) for meta in metadatas],
                 [_as_varchar(meta.get("difficulty")) for meta in metadatas],
@@ -195,7 +195,7 @@ class VectorStore:
                 param=search_params,
                 limit=top_k,
                 expr=filter_expr,
-                output_fields=["id", "content", "recipe_id", "name", "category", "difficulty"]
+                output_fields=["content"]
             )
 
             # 格式化结果
@@ -207,7 +207,7 @@ class VectorStore:
                         "content": hit.entity.get("content"),
                         "score": float(hit.score),
                         "metadata": {
-                            "recipe_id": hit.entity.get("recipe_id"),
+                            "doc_id": hit.entity.get("doc_id"),
                             "name": hit.entity.get("name"),
                             "category": hit.entity.get("category"),
                             "difficulty": hit.entity.get("difficulty"),

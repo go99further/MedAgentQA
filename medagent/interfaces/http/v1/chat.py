@@ -448,32 +448,32 @@ async def get_route_info() -> Dict[str, Any]:
             "additional-query": {
                 "name": "补充信息",
                 "description": "当问题模糊时，询问更多信息",
-                "examples": ["我想做菜", "帮我推荐一道菜"]
+                "examples": ["我最近有点不舒服", "帮我了解一下我的症状"]
             },
             "kb-query": {
                 "name": "知识库查询",
-                "description": "查询历史文化、典故等内容",
-                "examples": ["宫保鸡丁的历史", "川菜的特点"]
+                "description": "查询疾病历史、医学常识等内容",
+                "examples": ["糖尿病的发展历史", "高血压的常见类型"]
             },
             "graphrag-query": {
                 "name": "图谱查询",
-                "description": "查询做法、食材、烹饪技巧",
-                "examples": ["红烧肉怎么做", "需要什么食材"]
+                "description": "查询诊疗方案、药物信息、症状关联",
+                "examples": ["高血压怎么治疗", "需要做哪些检查"]
             },
             "text2sql-query": {
                 "name": "统计查询",
                 "description": "统计分析、计数、排名",
-                "examples": ["有多少道菜", "最受欢迎的菜"]
+                "examples": ["有多少种常见慢性病", "最常见的心血管疾病"]
             },
             "image-query": {
                 "name": "图片处理",
-                "description": "生成或分析图片",
-                "examples": ["生成一张红烧肉的图片"]
+                "description": "生成或分析医学图片",
+                "examples": ["分析这张X光片"]
             },
             "file-query": {
                 "name": "文件处理",
-                "description": "处理上传的菜谱文件",
-                "examples": ["分析这个菜谱文档"]
+                "description": "处理上传的医疗文档",
+                "examples": ["分析这份检查报告"]
             }
         },
         "auto_routing": "系统会根据您的问题自动选择合适的处理方式"
