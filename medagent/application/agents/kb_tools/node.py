@@ -73,7 +73,7 @@ def create_knowledge_query_node(
     llm_client: Optional[LLMClient] = None,
 ) -> Callable[[KnowledgeQueryInputState], Coroutine[Any, Any, KnowledgeQueryOutputState]]:
     """
-    Build a LangGraph node that queries the recipe knowledge base and crafts an answer.
+    Build a LangGraph node that queries the medical knowledge base and crafts an answer.
     """
 
     knowledge_service = knowledge_service or KnowledgeService()
