@@ -79,6 +79,22 @@ VERSIONS = {
             "verifier_max_refine_rounds": 1,
         },
     },
+    # Phase 8：数据贡献 vs 架构贡献对比实验
+    "v_cmed_baseline": {
+        "desc": "cMedQA2 + 单次 RAG（无 Verifier）",
+        "configurable": {
+            "evidence_verifier_enabled": False,
+            "milvus_collection": "cmedqa2",
+        },
+    },
+    "v_cmed_agentic": {
+        "desc": "cMedQA2 + Agentic RAG（默认阈值）",
+        "configurable": {"milvus_collection": "cmedqa2"},
+    },
+    "v_chimed_agentic": {
+        "desc": "ChiMed 2.0 + Agentic RAG（默认阈值）",
+        "configurable": {"milvus_collection": "chimedqa2"},
+    },
 }
 
 

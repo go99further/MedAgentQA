@@ -223,6 +223,17 @@ def create_evidence_verifier_node(
             else:
                 cfg = dict(getattr(config, "configurable", {}) or {})
 
+        # evidence_verifier_enabled=False → 直接 PROCEED，跳过验证层
+        if not cfg.get("evidence_verifier_enabled", True):
+            verifier_logger.info("Evidence Verifier: disabled via configurable → PROCEED")
+            return {
+                "verifier_decision": VerifierDecision.PROCEED,
+                "question": state.get("question", ""),
+                "refine_round": state.get("refine_round", 0),
+                "refined_queries": list(state.get("refined_queries") or []),
+                "steps": ["evidence_verifier"],
+            }
+
         if _fixed_strategy is not None:
             _strategy = _fixed_strategy
             _loop_threshold = getattr(_fixed_strategy, "loop_threshold", 0.92)

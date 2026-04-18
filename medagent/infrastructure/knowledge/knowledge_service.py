@@ -21,6 +21,7 @@ class KnowledgeService:
         self,
         *,
         vector_store: Optional[VectorStore] = None,
+        collection_name: Optional[str] = None,
         chunk_size: Optional[int] = None,
         chunk_overlap: Optional[int] = None,
     ) -> None:
@@ -43,7 +44,7 @@ class KnowledgeService:
         )
 
         self.vector_store = vector_store or VectorStore(
-            collection_name=settings.MILVUS_COLLECTION,
+            collection_name=collection_name or settings.MILVUS_COLLECTION,
             host=settings.MILVUS_HOST,
             port=settings.MILVUS_PORT,
             dimension=settings.EMBEDDING_DIMENSION,
