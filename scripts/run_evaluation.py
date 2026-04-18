@@ -114,6 +114,18 @@ VERSIONS = {
             "verifier_min_evidence_level": "A",
         },
     },
+    # Phase 9c：Synthetic Authority Knowledge Base 验证实验
+    "v9c_authority_baseline": {
+        "desc": "合成权威知识库 + Agentic RAG，无证据等级过滤（对照组）",
+        "configurable": {"milvus_collection": "v9c_authority"},
+    },
+    "v9c_authority_a": {
+        "desc": "合成权威知识库 + Agentic RAG，A-level 过滤（验证数据-阈值匹配假设）",
+        "configurable": {
+            "milvus_collection": "v9c_authority",
+            "verifier_min_evidence_level": "A",
+        },
+    },
 }
 
 
