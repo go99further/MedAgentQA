@@ -111,9 +111,12 @@ class EmbeddingClient:
         raise RuntimeError(f"Embedding failed after {MAX_RETRIES} retries") from last_exc
 
 
-def _ensure_collection(host: str, port: int, dimension: int, name: str) -> Collection:
+def _ensure_collection(host: str, port: int, dimension: int, name: str, drop_existing: bool = False) -> Collection:
     connections.connect(alias="default", host=host, port=port)
     logger.info("Connected to Milvus %s:%d", host, port)
+    if drop_existing and utility.has_collection(name):
+        utility.drop_collection(name)
+        logger.info("Dropped existing collection '%s' (--drop-existing)", name)
     if utility.has_collection(name):
         col = Collection(name)
         logger.info("Using existing collection '%s'", name)
@@ -125,6 +128,7 @@ def _ensure_collection(host: str, port: int, dimension: int, name: str) -> Colle
             FieldSchema("question_id", DataType.VARCHAR, max_length=64),
             FieldSchema("ans_id", DataType.VARCHAR, max_length=64),
             FieldSchema("department", DataType.VARCHAR, max_length=128),
+            FieldSchema("evidence_level", DataType.VARCHAR, max_length=8),
         ]
         schema = CollectionSchema(fields, description="cMedQA2 high-quality subset (chimedqa2)")
         col = Collection(name=name, schema=schema)
@@ -139,10 +143,26 @@ def _chunk_id(row_idx: int, chunk_idx: int) -> str:
     return hashlib.md5(raw.encode()).hexdigest()[:24]
 
 
+def _compute_evidence_level(answer_text: str) -> str:
+    """Assign evidence level based on answer length heuristic.
+
+    A: detailed answer (≥150 chars) — high quality
+    B: medium answer (50–149 chars) — medium quality
+    C: short answer (<50 chars)     — low quality
+    """
+    n = len(answer_text.strip())
+    if n >= 150:
+        return "A"
+    elif n >= 50:
+        return "B"
+    return "C"
+
+
 def ingest(*, n_samples: Optional[int], milvus_host: str, milvus_port: int,
            collection_name: str, batch_size: int, dry_run: bool,
            embedding_model: str, embedding_api_key: Optional[str],
-           embedding_base_url: Optional[str], embedding_dimension: int) -> Dict[str, Any]:
+           embedding_base_url: Optional[str], embedding_dimension: int,
+           drop_existing: bool = False) -> Dict[str, Any]:
     t0 = time.time()
     stats = {"total_rows": 0, "total_chunks": 0, "milvus_inserted": 0, "embed_errors": 0, "elapsed_seconds": 0.0}
 
@@ -162,19 +182,19 @@ def ingest(*, n_samples: Optional[int], milvus_host: str, milvus_port: int,
         model=embedding_model, api_key=embedding_api_key,
         base_url=embedding_base_url, dimension=embedding_dimension,
     )
-    collection = _ensure_collection(milvus_host, milvus_port, embedding_dimension, collection_name)
+    collection = _ensure_collection(milvus_host, milvus_port, embedding_dimension, collection_name, drop_existing=drop_existing)
     splitter = RecursiveCharacterTextSplitter(chunk_size=384, chunk_overlap=50, separators=CHINESE_SEPARATORS)
 
-    ids_buf, emb_buf, content_buf, qid_buf, aid_buf, dept_buf = [], [], [], [], [], []
+    ids_buf, emb_buf, content_buf, qid_buf, aid_buf, dept_buf, evidence_level_buf = [], [], [], [], [], [], []
 
     def _flush():
         if not ids_buf:
             return
-        collection.insert([ids_buf, emb_buf, content_buf, qid_buf, aid_buf, dept_buf])
+        collection.insert([ids_buf, emb_buf, content_buf, qid_buf, aid_buf, dept_buf, evidence_level_buf])
         collection.flush()
         stats["milvus_inserted"] += len(ids_buf)
         ids_buf.clear(); emb_buf.clear(); content_buf.clear()
-        qid_buf.clear(); aid_buf.clear(); dept_buf.clear()
+        qid_buf.clear(); aid_buf.clear(); dept_buf.clear(); evidence_level_buf.clear()
 
     for row_idx, row in tqdm(df.iterrows(), total=len(df), desc="Ingesting HQ"):
         chunks = splitter.split_text(row["answer"])
@@ -186,6 +206,7 @@ def ingest(*, n_samples: Optional[int], milvus_host: str, milvus_port: int,
             logger.warning("Embedding failed row %d: %s", row_idx, exc)
             stats["embed_errors"] += 1
             continue
+        answer_level = _compute_evidence_level(row["answer"])
         for ci, (chunk, vec) in enumerate(zip(chunks, vectors)):
             ids_buf.append(_chunk_id(row_idx, ci))
             emb_buf.append(vec)
@@ -193,6 +214,7 @@ def ingest(*, n_samples: Optional[int], milvus_host: str, milvus_port: int,
             qid_buf.append(str(row["question_id"]))
             aid_buf.append(str(row["ans_id"]))
             dept_buf.append("")
+            evidence_level_buf.append(answer_level)
             stats["total_chunks"] += 1
         if len(ids_buf) >= batch_size:
             _flush()
@@ -215,6 +237,8 @@ def main():
     parser.add_argument("--milvus-port", type=int, default=int(os.environ.get("MILVUS_PORT", "19530")))
     parser.add_argument("--batch-size", type=int, default=128)
     parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument("--drop-existing", action="store_true",
+                        help="Drop and recreate the Milvus collection (required when adding new schema fields).")
     args = parser.parse_args()
 
     embedding_model = os.environ.get("EMBEDDING_MODEL", "text-embedding-3-small")
@@ -233,6 +257,7 @@ def main():
         embedding_api_key=embedding_api_key,
         embedding_base_url=embedding_base_url,
         embedding_dimension=embedding_dimension,
+        drop_existing=args.drop_existing,
     )
 
 

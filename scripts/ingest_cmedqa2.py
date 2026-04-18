@@ -162,7 +162,7 @@ class EmbeddingClient:
         api_key: Optional[str] = None,
         base_url: Optional[str] = None,
         dimension: int = EMBEDDING_DIMENSION_DEFAULT,
-        max_batch_size: int = 64,
+        max_batch_size: int = 25,
         timeout: float = 120.0,
     ) -> None:
         self.model = model
@@ -251,6 +251,7 @@ def _ensure_milvus_collection(
     host: str,
     port: int,
     dimension: int,
+    drop_existing: bool = False,
 ) -> Collection:
     """Connect to Milvus and create / load the cMedQA2 collection.
 
@@ -261,6 +262,13 @@ def _ensure_milvus_collection(
     - ``question_id``: source question id
     - ``answer_id``: source answer id
     - ``department``: medical department
+    - ``evidence_level``: A/B/C quality tier based on answer length
+
+    Parameters
+    ----------
+    drop_existing:
+        If True, drop the existing collection before recreating it.
+        Required when adding new schema fields to an existing collection.
 
     Returns
     -------
@@ -269,6 +277,10 @@ def _ensure_milvus_collection(
     """
     connections.connect(alias="default", host=host, port=port)
     logger.info("Connected to Milvus at %s:%d", host, port)
+
+    if drop_existing and utility.has_collection(MILVUS_COLLECTION_NAME):
+        utility.drop_collection(MILVUS_COLLECTION_NAME)
+        logger.info("Dropped existing collection '%s' (--drop-existing)", MILVUS_COLLECTION_NAME)
 
     if utility.has_collection(MILVUS_COLLECTION_NAME):
         col = Collection(MILVUS_COLLECTION_NAME)
@@ -290,6 +302,9 @@ def _ensure_milvus_collection(
             ),
             FieldSchema(
                 name="department", dtype=DataType.VARCHAR, max_length=128
+            ),
+            FieldSchema(
+                name="evidence_level", dtype=DataType.VARCHAR, max_length=8
             ),
         ]
         schema = CollectionSchema(
@@ -323,6 +338,7 @@ def insert_milvus_batch(
     question_ids: List[str],
     answer_ids: List[str],
     departments: List[str],
+    evidence_levels: List[str],
 ) -> int:
     """Insert a batch of chunks into Milvus.
 
@@ -338,6 +354,7 @@ def insert_milvus_batch(
         question_ids,
         answer_ids,
         departments,
+        evidence_levels,
     ]
     collection.insert(entities)
     collection.flush()
@@ -418,6 +435,21 @@ def _chunk_id(question_id: str, answer_id: str, chunk_index: int) -> str:
     return hashlib.md5(raw.encode()).hexdigest()[:24]
 
 
+def _compute_evidence_level(answer_text: str) -> str:
+    """Assign evidence level based on answer length heuristic.
+
+    A: detailed answer (≥150 chars) — high quality
+    B: medium answer (50–149 chars) — medium quality
+    C: short answer (<50 chars)     — low quality
+    """
+    n = len(answer_text.strip())
+    if n >= 150:
+        return "A"
+    elif n >= 50:
+        return "B"
+    return "C"
+
+
 # ---------------------------------------------------------------------------
 # Main ingestion logic
 # ---------------------------------------------------------------------------
@@ -438,6 +470,7 @@ def ingest(
     embedding_dimension: int,
     limit: Optional[int] = None,
     offset: int = 0,
+    drop_existing: bool = False,
 ) -> Dict[str, Any]:
     """Run the full ingestion pipeline.
 
@@ -594,6 +627,7 @@ def ingest(
                     "answer_id": a_id,
                     "question_text": question_text,
                     "department": department,
+                    "evidence_level": _compute_evidence_level(answer_text),
                 }
             )
 
@@ -617,6 +651,7 @@ def ingest(
         host=milvus_host,
         port=milvus_port,
         dimension=embedding_dimension,
+        drop_existing=drop_existing,
     )
 
     for batch_start in tqdm(
@@ -645,6 +680,7 @@ def ingest(
             question_ids=[c["question_id"] for c in batch],
             answer_ids=[c["answer_id"] for c in batch],
             departments=[c["department"] for c in batch],
+            evidence_levels=[c["evidence_level"] for c in batch],
         )
         stats["milvus_inserted"] += inserted
 
@@ -819,6 +855,12 @@ def parse_args(argv: Optional[List[str]] = None) -> argparse.Namespace:
         default=0,
         help="Skip the first N answers (for resuming interrupted ingestion).",
     )
+    parser.add_argument(
+        "--drop-existing",
+        action="store_true",
+        default=False,
+        help="Drop and recreate the Milvus collection (required when adding new schema fields).",
+    )
     return parser.parse_args(argv)
 
 
@@ -861,6 +903,7 @@ def main(argv: Optional[List[str]] = None) -> None:
             embedding_dimension=embedding_dimension,
             limit=args.limit,
             offset=args.offset,
+            drop_existing=args.drop_existing,
         )
     except Exception:
         logger.exception("Ingestion pipeline failed")

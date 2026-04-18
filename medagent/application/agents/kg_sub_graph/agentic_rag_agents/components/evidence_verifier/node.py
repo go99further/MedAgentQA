@@ -20,6 +20,8 @@ from medagent.infrastructure.core.logger import get_logger
 
 verifier_logger = get_logger(service="evidence-verifier")
 
+_LEVEL_RANK: Dict[str, int] = {"A": 3, "B": 2, "C": 1, "": 1}
+
 
 class VerifierDecision(str, Enum):
     PROCEED = "proceed"       # 证据充分，直接生成
@@ -49,9 +51,10 @@ class DefaultVerifierStrategy:
     判断逻辑：
     1. 检索结果为空 → REFINE
     2. 有效 chunk 数 < MIN_CHUNKS → REFINE
-    3. 最高相关性分数 < MIN_RELEVANCE_SCORE → REFINE
-    4. 已达 MAX_REFINE_ROUNDS 次 → REFUSE
-    5. 否则 → PROCEED
+    3. 证据等级过滤后有效 chunk 数 < MIN_CHUNKS → REFINE
+    4. 最高相关性分数 < MIN_RELEVANCE_SCORE → REFINE
+    5. 已达 MAX_REFINE_ROUNDS 次 → REFUSE
+    6. 否则 → PROCEED
 
     防循环：新 refine query 与历史查询余弦相似度 > LOOP_THRESHOLD → REFUSE
     """
@@ -60,6 +63,7 @@ class DefaultVerifierStrategy:
     min_relevance_score: float = 0.3
     max_refine_rounds: int = 2
     loop_threshold: float = 0.92
+    min_evidence_level: str = "C"  # "A", "B", or "C" — 低于此等级的 chunk 不计入 valid_chunks
 
     def verify(
         self,
@@ -91,6 +95,28 @@ class DefaultVerifierStrategy:
                 self.min_chunks,
             )
             return VerifierDecision.REFINE
+
+        # 按证据等级过滤（仅当 min_evidence_level > "C" 时生效）
+        min_rank = _LEVEL_RANK.get(self.min_evidence_level, 1)
+        if min_rank > 1:
+            before = len(valid_chunks)
+            valid_chunks = [
+                c for c in valid_chunks
+                if _LEVEL_RANK.get(c.get("evidence_level", "C"), 1) >= min_rank
+            ]
+            verifier_logger.info(
+                "Evidence Verifier: evidence_level filter (>={}) kept {}/{} chunks",
+                self.min_evidence_level,
+                len(valid_chunks),
+                before,
+            )
+            if len(valid_chunks) < self.min_chunks:
+                verifier_logger.info(
+                    "Evidence Verifier: after evidence_level filter only {} chunks (< {}) → REFINE",
+                    len(valid_chunks),
+                    self.min_chunks,
+                )
+                return VerifierDecision.REFINE
 
         scores = [
             float(c.get("score") or c.get("similarity") or c.get("rerank_score") or 0.0)
@@ -242,6 +268,7 @@ def create_evidence_verifier_node(
                 min_relevance_score=cfg.get("verifier_min_relevance_score", 0.3),
                 min_chunks=int(cfg.get("verifier_min_chunks", 2)),
                 max_refine_rounds=int(cfg.get("verifier_max_refine_rounds", 2)),
+                min_evidence_level=cfg.get("verifier_min_evidence_level", "C"),
             )
             _loop_threshold = _strategy.loop_threshold
 

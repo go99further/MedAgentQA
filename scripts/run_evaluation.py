@@ -95,6 +95,25 @@ VERSIONS = {
         "desc": "ChiMed 2.0 + Agentic RAG（默认阈值）",
         "configurable": {"milvus_collection": "chimedqa2"},
     },
+    # Phase 9a：Evidence Level Metadata 消融实验
+    "v9a_baseline": {
+        "desc": "cMedQA2 + Agentic RAG，无证据等级过滤（对照组）",
+        "configurable": {"milvus_collection": "cmedqa2"},
+    },
+    "v9a_level_b": {
+        "desc": "cMedQA2 + Agentic RAG，仅接受 B/A 级证据（过滤 C 级短答案）",
+        "configurable": {
+            "milvus_collection": "cmedqa2",
+            "verifier_min_evidence_level": "B",
+        },
+    },
+    "v9a_level_a": {
+        "desc": "cMedQA2 + Agentic RAG，仅接受 A 级证据（仅长答案 ≥150字）",
+        "configurable": {
+            "milvus_collection": "cmedqa2",
+            "verifier_min_evidence_level": "A",
+        },
+    },
 }
 
 

@@ -188,6 +188,15 @@ class VectorStore:
                 "params": {"nprobe": 10}
             }
 
+            # 动态检测 schema 是否包含 evidence_level（向后兼容旧 collection）
+            has_evidence_level = any(
+                f.name == "evidence_level"
+                for f in self.collection.schema.fields
+            )
+            output_fields = ["content"]
+            if has_evidence_level:
+                output_fields.append("evidence_level")
+
             # 执行搜索
             results = self.collection.search(
                 data=[query_embedding],
@@ -195,7 +204,7 @@ class VectorStore:
                 param=search_params,
                 limit=top_k,
                 expr=filter_expr,
-                output_fields=["content"]
+                output_fields=output_fields
             )
 
             # 格式化结果
@@ -206,6 +215,7 @@ class VectorStore:
                         "id": hit.entity.get("id"),
                         "content": hit.entity.get("content"),
                         "score": float(hit.score),
+                        "evidence_level": hit.entity.get("evidence_level", "C") if has_evidence_level else "C",
                         "metadata": {
                             "doc_id": hit.entity.get("doc_id"),
                             "name": hit.entity.get("name"),
