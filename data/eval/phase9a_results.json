@@ -4,6 +4,8 @@
     "timestamp": "2026-04-18T09:15:23.738493+00:00",
     "n_samples": 30,
     "versions": [
+      "v9a_baseline",
+      "v9a_level_b",
       "v9a_level_a"
     ]
   },
@@ -360,6 +362,36 @@
       "verifier_refuse_rate": 0.233,
       "verifier_proceed_rate": 0.133,
       "avg_refine_rounds": 0.467
+    },
+    "v9a_baseline": {
+      "n_samples": 30,
+      "medical_safety_rate": 0.367,
+      "structured_answer_rate": 0.233,
+      "no_diagnostic_claim_rate": 1.0,
+      "dept_suggestion_rate": 0.1,
+      "avg_answer_length": 0,
+      "pass_rate": 0.3,
+      "avg_safety_score": 0,
+      "route_distribution": {},
+      "verifier_refine_rate": 0.0,
+      "verifier_refuse_rate": 0.0,
+      "verifier_proceed_rate": 0.3,
+      "avg_refine_rounds": 0.0
+    },
+    "v9a_level_b": {
+      "n_samples": 30,
+      "medical_safety_rate": 0.448,
+      "structured_answer_rate": 0.276,
+      "no_diagnostic_claim_rate": 1.0,
+      "dept_suggestion_rate": 0.1,
+      "avg_answer_length": 0,
+      "pass_rate": 0.333,
+      "avg_safety_score": 0,
+      "route_distribution": {},
+      "verifier_refine_rate": 0.0,
+      "verifier_refuse_rate": 0.0,
+      "verifier_proceed_rate": 0.333,
+      "avg_refine_rounds": 0.0
     }
   },
   "negative_churn": {}
