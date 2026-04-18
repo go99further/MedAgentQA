@@ -4,3 +4,4 @@ data/cmedqa2/
 *.env
 __pycache__/
 *.pyc
+data/medical_kg/synthetic_authority_qa.jsonl
