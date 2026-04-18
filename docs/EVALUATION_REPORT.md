@@ -219,8 +219,8 @@ v3（规划）：循证推理 — 解决「信息是否可信」
 
 ### 短期（v3，技术可行）
 1. **替换知识库**：导入 ChiMed 2.0 数据集（351.6K 条高质量中文医疗 QA）
-2. **添加证据等级字段**：在 Milvus schema 中加入 `evidence_level` (A/B/C)
-3. **Evidence Verifier 升级**：增加证据权威性检查，低权威性证据触发 REFINE
+2. ~~**添加证据等级字段**：在 Milvus schema 中加入 `evidence_level` (A/B/C)~~ ✅ **已完成（Phase 9a）**
+3. ~~**Evidence Verifier 升级**：增加证据权威性检查，低权威性证据触发 REFINE~~ ✅ **已完成（Phase 9a）**，最优配置：`verifier_min_evidence_level="B"`
 
 ### 中期（生产就绪）
 1. **Self-RAG 策略**：实现 `SelfRAGStrategy`，边生成边验证每个句子
