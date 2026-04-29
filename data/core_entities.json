@@ -1,0 +1,144 @@
+{
+  "version": "2.0",
+  "domain": "cardiovascular-endocrine-metabolic",
+  "created_at": "2026-04-29",
+  "updated_from": "1.0",
+  "description": "Core entity vocabulary for cardiovascular-endocrine-metabolic vertical domain. v2.0: expanded from 6 to 10 diseases, 21 to 22 drugs, added allergies type. Used as the filter gate for all data ingestion in Phase 14.",
+  "diseases": [
+    {
+      "standard_id": "DISEASE_001",
+      "name": "高血压",
+      "icd_code": "I10",
+      "category": "cardiovascular",
+      "synonyms": ["高血压病", "原发性高血压", "继发性高血压", "动脉高血压", "hypertension", "HTN"]
+    },
+    {
+      "standard_id": "DISEASE_002",
+      "name": "冠心病",
+      "icd_code": "I25",
+      "category": "cardiovascular",
+      "synonyms": ["冠状动脉性心脏病", "冠状动脉粥样硬化性心脏病", "缺血性心脏病", "coronary heart disease", "CHD", "CAD"]
+    },
+    {
+      "standard_id": "DISEASE_003",
+      "name": "心律失常",
+      "icd_code": "I49",
+      "category": "cardiovascular",
+      "synonyms": ["心律不齐", "室性早搏", "房性早搏", "arrhythmia", "室上性心动过速"]
+    },
+    {
+      "standard_id": "DISEASE_004",
+      "name": "糖尿病",
+      "icd_code": "E11",
+      "category": "endocrine",
+      "synonyms": ["2型糖尿病", "1型糖尿病", "T2DM", "T1DM", "diabetes mellitus", "DM", "消渴症"]
+    },
+    {
+      "standard_id": "DISEASE_005",
+      "name": "甲状腺功能亢进",
+      "icd_code": "E05",
+      "category": "endocrine",
+      "synonyms": ["甲亢", "毒性弥漫性甲状腺肿", "Graves病", "hyperthyroidism", "甲状腺毒症"]
+    },
+    {
+      "standard_id": "DISEASE_006",
+      "name": "甲状腺功能减退",
+      "icd_code": "E03",
+      "category": "endocrine",
+      "synonyms": ["甲减", "hypothyroidism", "桥本甲状腺炎", "自身免疫性甲状腺炎"]
+    },
+    {
+      "standard_id": "DISEASE_007",
+      "name": "心力衰竭",
+      "icd_code": "I50",
+      "category": "cardiovascular",
+      "synonyms": ["心衰", "充血性心力衰竭", "慢性心力衰竭", "急性心力衰竭", "heart failure", "CHF", "HF", "左心衰", "右心衰"]
+    },
+    {
+      "standard_id": "DISEASE_008",
+      "name": "高脂血症",
+      "icd_code": "E78",
+      "category": "metabolic",
+      "synonyms": ["高血脂", "血脂异常", "高胆固醇血症", "高甘油三酯血症", "dyslipidemia", "hyperlipidemia", "混合型高脂血症"]
+    },
+    {
+      "standard_id": "DISEASE_009",
+      "name": "心房颤动",
+      "icd_code": "I48",
+      "category": "cardiovascular",
+      "synonyms": ["房颤", "心房纤颤", "阵发性房颤", "持续性房颤", "永久性房颤", "atrial fibrillation", "AF", "AFib"]
+    },
+    {
+      "standard_id": "DISEASE_010",
+      "name": "肥胖",
+      "icd_code": "E66",
+      "category": "metabolic",
+      "synonyms": ["肥胖症", "单纯性肥胖", "病态肥胖", "中心性肥胖", "obesity", "BMI超标", "超重"]
+    }
+  ],
+  "drugs": [
+    {"standard_id": "DRUG_001", "name": "硝苯地平", "category": "calcium_channel_blocker", "indication": "高血压", "synonyms": ["拜新同", "心痛定", "nifedipine", "硝苯吡啶"]},
+    {"standard_id": "DRUG_002", "name": "氨氯地平", "category": "calcium_channel_blocker", "indication": "高血压", "synonyms": ["络活喜", "苯磺酸氨氯地平", "amlodipine", "氨氯地平片"]},
+    {"standard_id": "DRUG_003", "name": "厄贝沙坦", "category": "arb", "indication": "高血压", "synonyms": ["安博维", "irbesartan", "厄贝沙坦片"]},
+    {"standard_id": "DRUG_004", "name": "缬沙坦", "category": "arb", "indication": "高血压", "synonyms": ["代文", "valsartan", "缬沙坦胶囊"]},
+    {"standard_id": "DRUG_005", "name": "美托洛尔", "category": "beta_blocker", "indication": "高血压,心律失常,冠心病", "synonyms": ["倍他乐克", "metoprolol", "酒石酸美托洛尔", "琥珀酸美托洛尔"]},
+    {"standard_id": "DRUG_006", "name": "比索洛尔", "category": "beta_blocker", "indication": "高血压,冠心病", "synonyms": ["康忻", "bisoprolol", "富马酸比索洛尔"]},
+    {"standard_id": "DRUG_007", "name": "二甲双胍", "category": "biguanide", "indication": "糖尿病", "synonyms": ["格华止", "metformin", "盐酸二甲双胍", "二甲双胍片"]},
+    {"standard_id": "DRUG_008", "name": "格列美脲", "category": "sulfonylurea", "indication": "糖尿病", "synonyms": ["亚莫利", "glimepiride", "格列美脲片"]},
+    {"standard_id": "DRUG_009", "name": "阿卡波糖", "category": "alpha_glucosidase_inhibitor", "indication": "糖尿病", "synonyms": ["拜唐苹", "acarbose", "阿卡波糖片", "卡博平"]},
+    {"standard_id": "DRUG_010", "name": "胰岛素", "category": "insulin", "indication": "糖尿病", "synonyms": ["诺和锐", "优泌乐", "门冬胰岛素", "赖脯胰岛素", "甘精胰岛素", "insulin", "地特胰岛素"]},
+    {"standard_id": "DRUG_011", "name": "华法林", "category": "anticoagulant", "indication": "血栓,心律失常,心房颤动", "synonyms": ["华法令", "warfarin", "华法林钠", "可迈丁"]},
+    {"standard_id": "DRUG_012", "name": "阿司匹林", "category": "antiplatelet", "indication": "冠心病,血栓预防", "synonyms": ["乙酰水杨酸", "aspirin", "拜阿司匹灵", "阿司匹林肠溶片"]},
+    {"standard_id": "DRUG_013", "name": "氯吡格雷", "category": "antiplatelet", "indication": "冠心病,血栓预防", "synonyms": ["波立维", "泰嘉", "clopidogrel", "氯吡格雷片"]},
+    {"standard_id": "DRUG_014", "name": "左甲状腺素", "category": "thyroid_hormone", "indication": "甲状腺功能减退", "synonyms": ["优甲乐", "levothyroxine", "左旋甲状腺素", "L-T4"]},
+    {"standard_id": "DRUG_015", "name": "甲巯咪唑", "category": "antithyroid", "indication": "甲状腺功能亢进", "synonyms": ["他巴唑", "methimazole", "甲疏咪唑"]},
+    {"standard_id": "DRUG_016", "name": "丙硫氧嘧啶", "category": "antithyroid", "indication": "甲状腺功能亢进", "synonyms": ["PTU", "propylthiouracil", "丙基硫氧嘧啶"]},
+    {"standard_id": "DRUG_017", "name": "辛伐他汀", "category": "statin", "indication": "高脂血症,冠心病", "synonyms": ["舒降之", "simvastatin", "辛伐他汀片"]},
+    {"standard_id": "DRUG_018", "name": "阿托伐他汀", "category": "statin", "indication": "高脂血症,冠心病", "synonyms": ["立普妥", "atorvastatin", "阿托伐他汀钙片"]},
+    {"standard_id": "DRUG_019", "name": "硝酸甘油", "category": "nitrate", "indication": "心绞痛,冠心病", "synonyms": ["glyceryl trinitrate", "nitroglycerin", "GTN", "硝甘"]},
+    {"standard_id": "DRUG_020", "name": "速效救心丸", "category": "tcm_cardiology", "indication": "心绞痛,冠心病", "synonyms": ["麝香保心丸"]},
+    {"standard_id": "DRUG_021", "name": "复方丹参滴丸", "category": "tcm_cardiology", "indication": "心绞痛,冠心病", "synonyms": ["丹参滴丸", "compound danshen dripping pills"]},
+    {"standard_id": "DRUG_022", "name": "氢氯噻嗪", "category": "thiazide_diuretic", "indication": "高血压,心力衰竭", "synonyms": ["双氢克尿噻", "HCTZ", "hydrochlorothiazide", "氢氯噻嗪片", "噻嗪类利尿剂"]}
+  ],
+  "symptoms": [
+    {"standard_id": "SYMPTOM_001", "name": "胸痛", "category": "cardiovascular", "synonyms": ["胸部疼痛", "心前区疼痛", "心绞痛", "胸闷痛", "chest pain", "angina"]},
+    {"standard_id": "SYMPTOM_002", "name": "心悸", "category": "cardiovascular", "synonyms": ["心跳加速", "心慌", "心跳不规律", "palpitation", "心跳异常感"]},
+    {"standard_id": "SYMPTOM_003", "name": "气短", "category": "cardiovascular", "synonyms": ["呼吸困难", "喘气", "胸闷", "呼吸急促", "dyspnea", "shortness of breath"]},
+    {"standard_id": "SYMPTOM_004", "name": "头晕", "category": "cardiovascular", "synonyms": ["眩晕", "头昏", "眩晕感", "dizziness", "vertigo"]},
+    {"standard_id": "SYMPTOM_005", "name": "头痛", "category": "cardiovascular", "synonyms": ["头部疼痛", "偏头痛", "头疼", "headache"]},
+    {"standard_id": "SYMPTOM_006", "name": "水肿", "category": "cardiovascular", "synonyms": ["下肢水肿", "踝部水肿", "脚肿", "浮肿", "edema"]},
+    {"standard_id": "SYMPTOM_007", "name": "多饮", "category": "endocrine", "synonyms": ["口渴", "烦渴", "多饮水", "polydipsia", "饮水增多"]},
+    {"standard_id": "SYMPTOM_008", "name": "多尿", "category": "endocrine", "synonyms": ["尿频", "尿量增多", "polyuria", "频繁排尿"]},
+    {"standard_id": "SYMPTOM_009", "name": "多食", "category": "endocrine", "synonyms": ["食欲亢进", "多吃", "polyphagia", "饮食增多", "饥饿感增强"]},
+    {"standard_id": "SYMPTOM_010", "name": "体重减轻", "category": "endocrine", "synonyms": ["消瘦", "体重下降", "体重减少", "weight loss"]},
+    {"standard_id": "SYMPTOM_011", "name": "乏力", "category": "endocrine", "synonyms": ["疲乏", "倦怠", "体力下降", "fatigue", "weakness"]},
+    {"standard_id": "SYMPTOM_012", "name": "怕热", "category": "endocrine", "synonyms": ["畏热", "热耐受差", "heat intolerance", "喜凉怕热", "多汗"]},
+    {"standard_id": "SYMPTOM_013", "name": "怕冷", "category": "endocrine", "synonyms": ["畏寒", "冷耐受差", "cold intolerance", "喜暖怕冷", "四肢冰凉"]},
+    {"standard_id": "SYMPTOM_014", "name": "手抖", "category": "endocrine", "synonyms": ["手震颤", "四肢颤抖", "tremor", "手部震颤", "双手颤抖"]},
+    {"standard_id": "SYMPTOM_015", "name": "体重增加", "category": "metabolic", "synonyms": ["发胖", "体重上升", "weight gain", "肥胖趋势"]},
+    {"standard_id": "SYMPTOM_016", "name": "端坐呼吸", "category": "cardiovascular", "synonyms": ["不能平卧", "orthopnea", "平卧呼吸困难"]},
+    {"standard_id": "SYMPTOM_017", "name": "夜间阵发性呼吸困难", "category": "cardiovascular", "synonyms": ["夜间憋醒", "paroxysmal nocturnal dyspnea", "PND"]},
+    {"standard_id": "SYMPTOM_018", "name": "便秘", "category": "endocrine", "synonyms": ["排便困难", "大便干燥", "constipation"]},
+    {"standard_id": "SYMPTOM_019", "name": "皮肤干燥", "category": "endocrine", "synonyms": ["皮肤粗糙", "dry skin", "皮肤脱屑"]}
+  ],
+  "tests": [
+    {"standard_id": "TEST_001", "name": "血压", "category": "cardiovascular", "synonyms": ["BP", "blood pressure", "血压测量", "动态血压", "收缩压", "舒张压"]},
+    {"standard_id": "TEST_002", "name": "心电图", "category": "cardiovascular", "synonyms": ["ECG", "EKG", "electrocardiogram", "心电", "十二导联心电图", "动态心电图"]},
+    {"standard_id": "TEST_003", "name": "心脏彩超", "category": "cardiovascular", "synonyms": ["超声心动图", "心脏超声", "echocardiography", "心脏B超", "心彩超"]},
+    {"standard_id": "TEST_004", "name": "冠脉造影", "category": "cardiovascular", "synonyms": ["冠状动脉造影", "coronary angiography", "CAG", "心导管"]},
+    {"standard_id": "TEST_005", "name": "血糖", "category": "endocrine", "synonyms": ["blood glucose", "血葡萄糖", "空腹血糖", "餐后血糖", "血糖测定"]},
+    {"standard_id": "TEST_006", "name": "糖化血红蛋白", "category": "endocrine", "synonyms": ["HbA1c", "糖化血色素", "glycated hemoglobin"]},
+    {"standard_id": "TEST_007", "name": "甲状腺功能", "category": "endocrine", "synonyms": ["甲功", "TSH", "T3", "T4", "FT3", "FT4", "thyroid function"]},
+    {"standard_id": "TEST_008", "name": "甲状腺彩超", "category": "endocrine", "synonyms": ["甲状腺超声", "thyroid ultrasound", "甲状腺B超"]},
+    {"standard_id": "TEST_009", "name": "血脂", "category": "metabolic", "synonyms": ["血脂检查", "总胆固醇", "甘油三酯", "LDL", "HDL", "lipid panel", "血脂四项"]},
+    {"standard_id": "TEST_010", "name": "肝功能", "category": "general", "synonyms": ["肝功", "ALT", "AST", "转氨酶", "liver function", "肝功能检查"]},
+    {"standard_id": "TEST_011", "name": "肾功能", "category": "general", "synonyms": ["肾功", "肌酐", "尿素氮", "BUN", "Cr", "eGFR", "renal function", "肾功能检查"]}
+  ],
+  "allergies": [
+    {"standard_id": "ALLERGY_001", "name": "青霉素过敏", "category": "drug_allergy", "synonyms": ["青霉素", "penicillin allergy", "盘尼西林过敏"]},
+    {"standard_id": "ALLERGY_002", "name": "头孢过敏", "category": "drug_allergy", "synonyms": ["头孢菌素过敏", "cephalosporin allergy", "头孢类过敏"]},
+    {"standard_id": "ALLERGY_003", "name": "磺胺过敏", "category": "drug_allergy", "synonyms": ["磺胺类过敏", "sulfonamide allergy", "磺胺药物过敏"]},
+    {"standard_id": "ALLERGY_004", "name": "阿司匹林过敏", "category": "drug_allergy", "synonyms": ["aspirin allergy", "水杨酸过敏", "NSAIDs过敏"]},
+    {"standard_id": "ALLERGY_005", "name": "碘造影剂过敏", "category": "drug_allergy", "synonyms": ["碘过敏", "iodine contrast allergy", "造影剂过敏"]}
+  ]
+}
