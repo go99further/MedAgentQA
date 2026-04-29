@@ -9,7 +9,7 @@ import time
 from pathlib import Path
 from openai import OpenAI
 
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+sys.stdout.reconfigure(encoding='utf-8')
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from medagent.infrastructure.data.entity_utils import load_entity_mapping, map_text_to_ent_ids
@@ -63,7 +63,7 @@ def main():
     mapping = load_entity_mapping("data/entity_standard_id_mapping.json")
     id_to_name = mapping['id_to_name']
 
-    with open("data/eval/phase14_eval_50.jsonl", "r", encoding="utf-8") as f:
+    with open("data/eval/phase14_eval_50_strict.jsonl", "r", encoding="utf-8") as f:
         eval_set = [json.loads(line) for line in f]
 
     print(f"评估集: {len(eval_set)} 条")
@@ -190,7 +190,7 @@ def main():
         "per_question_results": results,
     }
 
-    output_file = Path("data/eval/phase14_eval_50_results.json")
+    output_file = Path("data/eval/phase14_eval_50_strict_results.json")
     with open(output_file, "w", encoding="utf-8") as f:
         json.dump(output, f, indent=2, ensure_ascii=False)
 
